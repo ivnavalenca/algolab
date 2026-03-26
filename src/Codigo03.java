@@ -60,11 +60,11 @@ public class Codigo03 {
         System.out.println("Total de cópias: " + copias);
 
         /*
-         * ✅ RESPOSTA:
+         * RESPOSTA:
          *
          * Inserimos 33 elementos (de 1 até 33)
          *
-         * 📌 REDIMENSIONAMENTOS:
+         * REDIMENSIONAMENTOS:
          *
          * Capacidade inicial = 5
          *
@@ -73,10 +73,10 @@ public class Codigo03 {
          * - 11º elemento → 10 → 20
          * - 21º elemento → 20 → 40
          *
-         * 👉 Total = 3 redimensionamentos
+         * Total = 3 redimensionamentos
          *
          *
-         * 📌 CÓPIAS:
+         * CÓPIAS:
          *
          * Cada redimensionamento copia TODOS os elementos:
          *
@@ -87,10 +87,10 @@ public class Codigo03 {
          * Total:
          * 5 + 10 + 20 = 35 cópias
          *
-         * 👉 Total = 35 cópias
+         * Total = 35 cópias
          *
          *
-         * 💡 CONCEITO IMPORTANTE:
+         * CONCEITO IMPORTANTE:
          *
          * Apesar das cópias, o custo médio de inserção é O(1)
          * (complexidade amortizada).

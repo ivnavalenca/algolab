@@ -42,14 +42,14 @@ public class Codigo01 {
         System.out.println("Quantidade de execuções da linha: " + contador);
 
         /*
-         * ✅ RESPOSTA:
+         * RESPOSTA:
          *
          * O laço executa de i = 1 até i = N-1
          * Portanto, ele executa (N - 1) vezes.
          *
          * Logo, a terceira linha (IF) é executada:
          *
-         * 👉 N - 1 vezes
+         * N - 1 vezes
          *
          * EXEMPLO:
          * Se N = 5 → executa 4 vezes

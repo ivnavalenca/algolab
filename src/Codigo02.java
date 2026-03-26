@@ -57,7 +57,7 @@ public class Codigo02 {
         System.out.println("Quantidade de execuções de hits++: " + resultado);
 
         /*
-         * ✅ RESPOSTA:
+         * RESPOSTA:
          *
          * Precisamos contar quantas LINHAS possuem pelo menos um valor 7.
          *
@@ -69,9 +69,9 @@ public class Codigo02 {
          *
          * Total = 5
          *
-         * 👉 Portanto, a linha "hits++" é executada 5 vezes.
+         * Portanto, a linha "hits++" é executada 5 vezes.
          *
-         * 💡 OBSERVAÇÃO IMPORTANTE:
+         * OBSERVAÇÃO IMPORTANTE:
          * Mesmo que a linha tenha vários 7,
          * o "break" garante que só conte UMA vez por linha.
          */
