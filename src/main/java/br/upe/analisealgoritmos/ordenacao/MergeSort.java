@@ -1,110 +1,41 @@
 package br.upe.analisealgoritmos.ordenacao;
 
-/*
- * ============================================================
- * MERGE SORT (Strategy Pattern)
- * ============================================================
- *
- * IDEIA:
- * Divide o vetor em partes menores, ordena cada parte
- * e depois combina (merge) os resultados.
- *
- * Estratégia: DIVIDIR PARA CONQUISTAR
- *
- * ============================================================
- * COMPLEXIDADE:
- *
- * Melhor caso: O(n log n)
- * Caso médio: O(n log n)
- * Pior caso: O(n log n)
- *
- * 👉 Sempre mantém a mesma complexidade
- *
- * ============================================================
- * CARACTERÍSTICAS:
- *
- * ✔ Estável
- * ✔ Previsível
- * ❌ Usa memória extra
- *
- * ============================================================
- */
-
 public class MergeSort implements Ordenador {
 
-    @Override
-    public void ordenar(int[] vetor) {
-        mergeSort(vetor, 0, vetor.length - 1);
+    public void ordenar(int[] v) {
+        mergeSort(v, 0, v.length - 1);
     }
 
-    /*
-     * Função recursiva
-     */
-    private void mergeSort(int[] vetor, int inicio, int fim) {
+    private void mergeSort(int[] v, int l, int r) {
+        if (l >= r) return;
 
-        if (inicio >= fim) return;
+        int m = (l + r) / 2;
 
-        int meio = (inicio + fim) / 2;
+        mergeSort(v, l, m);
+        mergeSort(v, m + 1, r);
 
-        /*
-         * Divide o problema
-         */
-        mergeSort(vetor, inicio, meio);
-        mergeSort(vetor, meio + 1, fim);
-
-        /*
-         * Combina as partes
-         */
-        merge(vetor, inicio, meio, fim);
+        merge(v, l, m, r);
     }
 
-    /*
-     * Função de intercalação
-     */
-    private void merge(int[] vetor, int inicio, int meio, int fim) {
+    private void merge(int[] v, int l, int m, int r) {
+        int[] temp = new int[v.length];
 
-        int[] esquerda = new int[meio - inicio + 1];
-        int[] direita = new int[fim - meio];
+        int i = l, j = m + 1, k = l;
 
-        /*
-         * Copia dados
-         */
-        for (int i = 0; i < esquerda.length; i++) {
-            esquerda[i] = vetor[inicio + i];
+        while (i <= m && j <= r) {
+            if (v[i] <= v[j]) temp[k++] = v[i++];
+            else temp[k++] = v[j++];
         }
 
-        for (int i = 0; i < direita.length; i++) {
-            direita[i] = vetor[meio + 1 + i];
-        }
+        while (i <= m) temp[k++] = v[i++];
+        while (j <= r) temp[k++] = v[j++];
 
-        int i = 0, j = 0, k = inicio;
-
-        /*
-         * Intercala mantendo ordenação
-         */
-        while (i < esquerda.length && j < direita.length) {
-
-            if (esquerda[i] <= direita[j]) {
-                vetor[k++] = esquerda[i++];
-            } else {
-                vetor[k++] = direita[j++];
-            }
-        }
-
-        /*
-         * Copia o restante
-         */
-        while (i < esquerda.length) {
-            vetor[k++] = esquerda[i++];
-        }
-
-        while (j < direita.length) {
-            vetor[k++] = direita[j++];
+        for (i = l; i <= r; i++) {
+            v[i] = temp[i];
         }
     }
 
-    @Override
-    public String getNome() {
+    public String nome() {
         return "MergeSort";
     }
 }

@@ -1,8 +1,10 @@
 package br.upe.analisealgoritmos.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
@@ -12,22 +14,16 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 /*
  * ============================================================
- * GERADOR DE GRÁFICO A PARTIR DE CSV
+ * CLASSE: GeradorGraficoCSV
  * ============================================================
  *
  * OBJETIVO:
- * Ler arquivo CSV e gerar gráfico automaticamente.
+ * Gerar gráfico a partir de arquivo CSV contendo resultados de benchmark.
  *
- * ============================================================
- * FORMATO DO CSV:
- *
- * n,Bubble,Insertion,Selection,Merge,Quick,JavaSort
- *
- * ============================================================
- * RESULTADO:
- *
- * ✔ Geração automática de gráfico PNG
- * ✔ Visualização comparativa dos algoritmos
+ * MELHORIAS IMPLEMENTADAS:
+ * ✔ Estilo padronizado (GraficoUtils)
+ * ✔ Destaque automático do melhor algoritmo
+ * ✔ Código mais limpo e reutilizável
  *
  * ============================================================
  */
@@ -36,76 +32,87 @@ public class GeradorGraficoCSV {
 
     public static void gerarGrafico(String caminhoCSV, String caminhoSaida) {
 
-        XYSeriesCollection dataset = new XYSeriesCollection();
+        try {
 
-        try (BufferedReader br = new BufferedReader(new FileReader(caminhoCSV))) {
+            Map<String, XYSeries> seriesMap = new HashMap<>();
 
-            /*
-             * Lê cabeçalho (nomes das colunas)
-             */
-            String linha = br.readLine();
-            String[] nomes = linha.split(",");
+            BufferedReader br = new BufferedReader(new FileReader(caminhoCSV));
+            String linha;
 
-            /*
-             * Cria uma série para cada algoritmo
-             */
-            XYSeries[] series = new XYSeries[nomes.length - 1];
-
-            for (int i = 1; i < nomes.length; i++) {
-                series[i - 1] = new XYSeries(nomes[i]);
-            }
+            // Pular cabeçalho
+            br.readLine();
 
             /*
-             * Lê dados do CSV
+             * ============================================================
+             * LEITURA DO CSV
+             * Esperado:
+             * tamanho,cenario,algoritmo,tempo
+             * ============================================================
              */
             while ((linha = br.readLine()) != null) {
 
                 String[] valores = linha.split(",");
 
-                int n = Integer.parseInt(valores[0]);
+                int tamanho = Integer.parseInt(valores[0]);
+                String algoritmo = valores[2];
+                double tempo = Double.parseDouble(valores[3]);
 
-                for (int i = 1; i < valores.length; i++) {
+                // Cria série se não existir
+                seriesMap.putIfAbsent(algoritmo, new XYSeries(algoritmo));
 
-                    long tempo = Long.parseLong(valores[i]);
+                // Adiciona ponto
+                seriesMap.get(algoritmo).add(tamanho, tempo);
+            }
 
-                    series[i - 1].add(n, tempo);
-                }
+            br.close();
+
+            /*
+             * ============================================================
+             * MONTA DATASET
+             * ============================================================
+             */
+            XYSeriesCollection dataset = new XYSeriesCollection();
+
+            for (XYSeries serie : seriesMap.values()) {
+                dataset.addSeries(serie);
             }
 
             /*
-             * Adiciona todas as séries ao dataset
+             * ============================================================
+             * CRIA GRÁFICO
+             * ============================================================
              */
-            for (XYSeries s : series) {
-                dataset.addSeries(s);
-            }
+            JFreeChart chart = ChartFactory.createXYLineChart(
+                    "Comparação de Algoritmos",
+                    "Tamanho da Entrada (n)",
+                    "Tempo (ns)",
+                    dataset
+            );
 
-        } catch (IOException e) {
-            System.err.println("Erro ao ler CSV: " + e.getMessage());
-            return;
-        }
+            /*
+             * ============================================================
+             * 🔥 AQUI ESTÁ A MELHORIA PRINCIPAL
+             * ============================================================
+             */
+            GraficoUtils.aplicarEstiloXY(chart, dataset);
 
-        /*
-         * Cria gráfico de linhas
-         */
-        JFreeChart chart = ChartFactory.createXYLineChart(
-                "Comparação de Algoritmos de Ordenação",
-                "Tamanho (n)",
-                "Tempo (ns)",
-                dataset
-        );
-
-        try {
+            /*
+             * ============================================================
+             * SALVA IMAGEM
+             * ============================================================
+             */
             ChartUtils.saveChartAsPNG(
-                    new java.io.File(caminhoSaida),
+                    new File(caminhoSaida),
                     chart,
                     800,
                     600
             );
 
-            System.out.println("Gráfico gerado em: " + caminhoSaida);
+            System.out.println("📊 Gráfico gerado em: " + caminhoSaida);
 
-        } catch (IOException e) {
-            System.err.println("Erro ao salvar gráfico: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Erro ao gerar gráfico: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

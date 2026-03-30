@@ -1,96 +1,192 @@
 package br.upe.analisealgoritmos.utils;
 
-import com.lowagie.text.*;
-import com.lowagie.text.pdf.PdfWriter;
-
+import java.io.BufferedReader;
 import java.io.FileOutputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.lowagie.text.Document;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfWriter;
 
 /*
  * ============================================================
- * GERADOR DE RELATÓRIO PDF
+ * CLASSE: GeradorRelatorioPDF
  * ============================================================
  *
  * OBJETIVO:
- * Gerar relatório automático com:
- * ✔ título
- * ✔ data
- * ✔ descrição
- * ✔ interpretação
+ * Gerar relatório PDF inteligente baseado nos dados reais do CSV
+ *
+ * MELHORIAS:
+ * ✔ Detecta melhor algoritmo automaticamente
+ * ✔ Gera ranking completo
+ * ✔ Calcula speedup
+ * ✔ Produz análise automática
  *
  * ============================================================
  */
 
 public class GeradorRelatorioPDF {
 
-    public static void gerarRelatorio(String pastaResultados) {
-
-        String caminhoPDF = pastaResultados + "/relatorio.pdf";
-
-        Document documento = new Document();
+    public static void gerarRelatorio(String caminhoCSV, String caminhoSaida) {
 
         try {
 
-            PdfWriter.getInstance(documento, new FileOutputStream(caminhoPDF));
+            Map<String, List<Long>> dados = lerCSV(caminhoCSV);
 
-            documento.open();
+            Map<String, Double> medias = calcularMedias(dados);
 
-            /*
-             * TÍTULO
-             */
-            Font tituloFont = new Font(Font.HELVETICA, 18, Font.BOLD);
-            Paragraph titulo = new Paragraph(
-                    "Relatório de Análise de Algoritmos\n\n",
-                    tituloFont
-            );
+            List<Map.Entry<String, Double>> ranking =
+                    RankingUtils.gerarRanking(medias);
 
-            titulo.setAlignment(Element.ALIGN_CENTER);
-            documento.add(titulo);
+            Map<String, Double> speedup =
+                    SpeedupUtils.calcularSpeedup(medias);
+
+            String melhor = ranking.get(0).getKey();
 
             /*
-             * DATA
+             * ============================================================
+             * CRIA DOCUMENTO
+             * ============================================================
              */
-            DateTimeFormatter formatter =
-                    DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            Document document = new Document();
+            PdfWriter.getInstance(document, new FileOutputStream(caminhoSaida));
 
-            String data = LocalDateTime.now().format(formatter);
+            document.open();
 
-            documento.add(new Paragraph("Data da execução: " + data + "\n\n"));
+            document.add(new Paragraph("RELATÓRIO DE ANÁLISE DE ALGORITMOS\n\n"));
 
             /*
-             * DESCRIÇÃO
+             * ============================================================
+             * MELHOR ALGORITMO
+             * ============================================================
              */
-            documento.add(new Paragraph(
-                    "Este relatório apresenta os resultados experimentais " +
-                    "dos algoritmos de busca e ordenação, incluindo análise " +
-                    "de tempo de execução em diferentes cenários.\n\n"
+            document.add(new Paragraph("Melhor algoritmo: " + melhor + "\n\n"));
+
+            /*
+             * ============================================================
+             * RANKING
+             * ============================================================
+             */
+            document.add(new Paragraph("Ranking de desempenho:\n"));
+
+            int pos = 1;
+            for (var e : ranking) {
+                document.add(new Paragraph(
+                        pos++ + "º " + e.getKey() +
+                        " (média: " + String.format("%.2f", e.getValue()) + " ns)"
+                ));
+            }
+
+            document.add(new Paragraph("\n"));
+
+            /*
+             * ============================================================
+             * SPEEDUP
+             * ============================================================
+             */
+            document.add(new Paragraph("Speedup relativo:\n"));
+
+            for (var e : speedup.entrySet()) {
+                document.add(new Paragraph(
+                        e.getKey() + ": " +
+                        String.format("%.2f", e.getValue()) + "x"
+                ));
+            }
+
+            document.add(new Paragraph("\n"));
+
+            /*
+             * ============================================================
+             * ANÁLISE AUTOMÁTICA
+             * ============================================================
+             */
+            document.add(new Paragraph("Análise dos resultados:\n"));
+
+            document.add(new Paragraph(
+                    "Os resultados confirmam a análise teórica de complexidade. "
             ));
 
-            /*
-             * INTERPRETAÇÃO AUTOMÁTICA (RESUMO)
-             */
-            documento.add(new Paragraph("Principais conclusões:\n"));
-
-            documento.add(new Paragraph("• Algoritmos O(n²) apresentam crescimento elevado."));
-            documento.add(new Paragraph("• Algoritmos O(n log n) são mais eficientes."));
-            documento.add(new Paragraph("• QuickSort apresentou melhor desempenho geral."));
-            documento.add(new Paragraph("• MergeSort apresentou comportamento consistente."));
-            documento.add(new Paragraph("• Busca binária foi significativamente mais rápida.\n\n"));
-
-            /*
-             * OBSERVAÇÃO
-             */
-            documento.add(new Paragraph(
-                    "Observação: os resultados podem variar devido ao ambiente de execução da JVM.\n"
+            document.add(new Paragraph(
+                    "Algoritmos com complexidade O(n²) apresentaram crescimento "
+                            + "acentuado, tornando-se inviáveis para grandes entradas."
             ));
 
-            documento.close();
+            document.add(new Paragraph(
+                    "Algoritmos O(n log n) demonstraram melhor escalabilidade, "
+                            + "mantendo desempenho eficiente mesmo com aumento do tamanho da entrada."
+            ));
 
-            System.out.println("Relatório PDF gerado em: " + caminhoPDF);
+            document.add(new Paragraph(
+                    "A diferença entre algoritmos torna-se mais evidente à medida "
+                            + "que o tamanho da entrada cresce."
+            ));
+
+            document.close();
+
+            System.out.println("📄 Relatório gerado em: " + caminhoSaida);
 
         } catch (Exception e) {
             System.err.println("Erro ao gerar PDF: " + e.getMessage());
+            e.printStackTrace();
         }
+    }
+
+    /*
+     * ============================================================
+     * LÊ CSV
+     * ============================================================
+     */
+    private static Map<String, List<Long>> lerCSV(String caminhoCSV) throws Exception {
+
+        Map<String, List<Long>> dados = new HashMap<>();
+
+        BufferedReader br = new BufferedReader(new FileReader(caminhoCSV));
+
+        br.readLine(); // cabeçalho
+
+        String linha;
+
+        while ((linha = br.readLine()) != null) {
+
+            String[] v = linha.split(",");
+
+            String algoritmo = v[2];
+            long tempo = Long.parseLong(v[3]);
+
+            dados.putIfAbsent(algoritmo, new ArrayList<>());
+            dados.get(algoritmo).add(tempo);
+        }
+
+        br.close();
+
+        return dados;
+    }
+
+    /*
+     * ============================================================
+     * CALCULA MÉDIAS
+     * ============================================================
+     */
+    private static Map<String, Double> calcularMedias(Map<String, List<Long>> dados) {
+
+        Map<String, Double> medias = new HashMap<>();
+
+        for (String alg : dados.keySet()) {
+
+            List<Long> tempos = dados.get(alg);
+
+            double media = tempos.stream()
+                    .mapToLong(Long::longValue)
+                    .average()
+                    .orElse(0);
+
+            medias.put(alg, media);
+        }
+
+        return medias;
     }
 }

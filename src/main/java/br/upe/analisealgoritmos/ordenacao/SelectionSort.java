@@ -1,69 +1,24 @@
 package br.upe.analisealgoritmos.ordenacao;
 
-/*
- * ============================================================
- * SELECTION SORT (Strategy Pattern)
- * ============================================================
- *
- * IDEIA:
- * Seleciona o menor elemento do vetor e coloca na posição correta.
- *
- * A cada iteração:
- * - encontra o menor elemento
- * - troca com a posição atual
- *
- * ============================================================
- * COMPLEXIDADE:
- *
- * Melhor caso: O(n²)
- * Caso médio: O(n²)
- * Pior caso: O(n²)
- *
- * 👉 IMPORTANTE:
- * Não é adaptativo → não melhora com vetor ordenado
- *
- * ============================================================
- * CARACTERÍSTICAS:
- *
- * ✔ Simples
- * ✔ Poucas trocas
- * ❌ Sempre percorre todo o vetor
- *
- * ============================================================
- */
-
 public class SelectionSort implements Ordenador {
 
-    @Override
-    public void ordenar(int[] vetor) {
+    public void ordenar(int[] v) {
+        for (int i = 0; i < v.length; i++) {
+            int min = i;
 
-        int n = vetor.length;
-
-        for (int i = 0; i < n - 1; i++) {
-
-            int indiceMenor = i;
-
-            /*
-             * Busca o menor elemento
-             */
-            for (int j = i + 1; j < n; j++) {
-
-                if (vetor[j] < vetor[indiceMenor]) {
-                    indiceMenor = j;
+            for (int j = i + 1; j < v.length; j++) {
+                if (v[j] < v[min]) {
+                    min = j;
                 }
             }
 
-            /*
-             * Troca com a posição atual
-             */
-            int temp = vetor[i];
-            vetor[i] = vetor[indiceMenor];
-            vetor[indiceMenor] = temp;
+            int tmp = v[i];
+            v[i] = v[min];
+            v[min] = tmp;
         }
     }
 
-    @Override
-    public String getNome() {
+    public String nome() {
         return "SelectionSort";
     }
 }

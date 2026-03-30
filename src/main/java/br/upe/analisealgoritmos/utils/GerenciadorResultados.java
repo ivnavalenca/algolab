@@ -1,81 +1,94 @@
 package br.upe.analisealgoritmos.utils;
 
 import java.io.File;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
 
 /*
  * ============================================================
- * GERENCIADOR DE RESULTADOS
+ * CLASSE: GerenciadorResultados
  * ============================================================
  *
  * OBJETIVO:
- * Organizar automaticamente os resultados dos experimentos
- * em pastas únicas por execução.
+ * Gerenciar arquivos de saída do sistema:
+ * ✔ CSV
+ * ✔ gráficos
+ * ✔ relatórios PDF
  *
- * ============================================================
- * ESTRUTURA GERADA:
- *
- * resultados/
- *   └── run_2026-03-29_15-30-10/
- *         ├── ordenacao.csv
- *         ├── ordenacao_grafico.png
- *         ├── busca.csv
- *
- * ============================================================
- * BENEFÍCIOS:
- *
- * ✔ Evita sobrescrever arquivos
- * ✔ Permite histórico de execuções
- * ✔ Organização profissional
+ * FUNCIONALIDADES:
+ * ✔ Criar nomes únicos com timestamp
+ * ✔ Organizar pasta de resultados
+ * ✔ Recuperar último CSV gerado
  *
  * ============================================================
  */
 
 public class GerenciadorResultados {
 
-    private static String pastaAtual;
+    private static final String PASTA_RESULTADOS = "resultados";
 
     /*
-     * Cria pasta única baseada em data/hora
+     * ============================================================
+     * GARANTE QUE A PASTA EXISTE
+     * ============================================================
      */
-    public static String criarPastaExecucao() {
+    private static void garantirPasta() {
 
-        if (pastaAtual != null) {
-            return pastaAtual;
-        }
-
-        DateTimeFormatter formatter =
-                DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
-
-        String timestamp = LocalDateTime.now().format(formatter);
-
-        pastaAtual = "resultados/run_" + timestamp;
-
-        File pasta = new File(pastaAtual);
+        File pasta = new File(PASTA_RESULTADOS);
 
         if (!pasta.exists()) {
-            boolean criada = pasta.mkdirs();
-
-            if (!criada) {
-                System.err.println("Erro ao criar pasta de resultados!");
-            }
+            pasta.mkdirs();
         }
-
-        System.out.println("Pasta de resultados: " + pastaAtual);
-
-        return pastaAtual;
     }
 
     /*
-     * Retorna caminho completo de um arquivo dentro da pasta
+     * ============================================================
+     * GERA CAMINHO DE ARQUIVO COM TIMESTAMP
+     * ============================================================
      */
-    public static String caminhoArquivo(String nomeArquivo) {
+    public static String caminhoArquivo(String nomeBase) {
 
-        if (pastaAtual == null) {
-            criarPastaExecucao();
+        garantirPasta();
+
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+        return PASTA_RESULTADOS + "/" + nomeBase + "_" + timestamp;
+    }
+
+    /*
+     * ============================================================
+     * GERA CAMINHO COMPLETO COM EXTENSÃO
+     * ============================================================
+     */
+    public static String caminhoArquivo(String nomeBase, String extensao) {
+
+        return caminhoArquivo(nomeBase) + "." + extensao;
+    }
+
+    /*
+     * ============================================================
+     * OBTÉM O ÚLTIMO CSV GERADO
+     * ============================================================
+     */
+    public static String getUltimoCSV() {
+
+        File pasta = new File(PASTA_RESULTADOS);
+
+        if (!pasta.exists()) {
+            throw new RuntimeException("❌ Pasta de resultados não encontrada.");
         }
 
-        return pastaAtual + "/" + nomeArquivo;
+        File[] arquivos = pasta.listFiles((dir, name) -> name.endsWith(".csv"));
+
+        if (arquivos == null || arquivos.length == 0) {
+            throw new RuntimeException("❌ Nenhum CSV encontrado.");
+        }
+
+        // Ordena pelo mais recente
+        Arrays.sort(arquivos, Comparator.comparingLong(File::lastModified).reversed());
+
+        return arquivos[0].getAbsolutePath();
     }
 }

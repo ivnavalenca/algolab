@@ -1,107 +1,88 @@
 package br.upe.analisealgoritmos.experimentos;
 
-import br.upe.analisealgoritmos.busca.*;
-import br.upe.analisealgoritmos.utils.*;
+/*
+ * ============================================================
+ * IMPORTS
+ * ============================================================
+ */
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
+import br.upe.analisealgoritmos.busca.BuscaBinaria;
+import br.upe.analisealgoritmos.busca.BuscaLinear;
+import br.upe.analisealgoritmos.busca.Buscador;
+import br.upe.analisealgoritmos.utils.CSVExporter;
+import br.upe.analisealgoritmos.utils.GeradorDados;
 
 /*
  * ============================================================
- * EXPERIMENTO DE BUSCA (VERSÃO FINAL CORRIGIDA)
- * ============================================================
- *
- * ✔ compatível com BenchmarkRunner novo
- * ✔ usa Runnable corretamente
- * ✔ mantém CSV + gráfico
- *
+ * CLASSE: ExperimentoBuscaGrafico
  * ============================================================
  */
 
 public class ExperimentoBuscaGrafico {
 
-    private static final int EXECUCOES = 20;
-
     public static void executar() {
 
-        /*
-         * Pasta da execução
-         */
-        String pasta = GerenciadorResultados.criarPastaExecucao();
-
-        String caminhoCSV = GerenciadorResultados.caminhoArquivo("busca.csv");
-        String caminhoGrafico = GerenciadorResultados.caminhoArquivo("busca_grafico.png");
-
-        int[] tamanhos = {1000, 2000, 4000, 8000, 16000};
-
-        BenchmarkRunner runner = new BenchmarkRunner(EXECUCOES);
+        int[] tamanhos = {100, 1000, 5000};
+        List<String[]> resultados = new ArrayList<>();
 
         /*
-         * Cria CSV
+         * ============================================================
+         * CRIANDO BUSCADORES (OBJETOS)
+         * ============================================================
          */
-        CSVExporter.criarArquivo(
-                caminhoCSV,
-                "n,Linear,Binaria"
-        );
-
-        System.out.println("\n=== BUSCA (VERSÃO FINAL) ===");
+        Buscador buscaLinear = new BuscaLinear();
+        Buscador buscaBinaria = new BuscaBinaria();
 
         for (int n : tamanhos) {
 
-            int[] vetor = GeradorVetor.gerarAleatorio(n);
+            int[] vetor = GeradorDados.gerarVetorAleatorio(n);
+            int alvo = vetor[n / 2];
 
             /*
-             * Escolhe valor (último → pior caso para linear)
+             * ============================================================
+             * BUSCA LINEAR
+             * ============================================================
              */
-            int chave = vetor[n - 1];
+            long inicio = System.nanoTime();
+
+            buscaLinear.buscar(vetor, alvo); // ✔ CORREÇÃO
+
+            long fim = System.nanoTime();
+
+            resultados.add(new String[]{
+                    String.valueOf(n),
+                    "busca",
+                    "BuscaLinear",
+                    String.valueOf(fim - inicio)
+            });
 
             /*
-             * Busca Linear
+             * ============================================================
+             * BUSCA BINÁRIA
+             * ============================================================
              */
-            Buscador buscaLinear = FabricaBuscadores.criar(TipoBusca.LINEAR);
+            Arrays.sort(vetor);
 
-            long tempoLinear = runner.medirTempo(
-                    () -> buscaLinear.buscar(vetor, chave)
-            );
+            inicio = System.nanoTime();
 
-            /*
-             * Busca Binária (vetor ordenado)
-             */
-            int[] vetorOrdenado = vetor.clone();
-            Arrays.sort(vetorOrdenado);
+            buscaBinaria.buscar(vetor, alvo); // ✔ CORREÇÃO
 
-            Buscador buscaBinaria = FabricaBuscadores.criar(TipoBusca.BINARIA);
+            fim = System.nanoTime();
 
-            long tempoBinaria = runner.medirTempo(
-                    () -> buscaBinaria.buscar(vetorOrdenado, chave)
-            );
-
-            /*
-             * Log formatado
-             */
-            System.out.printf(
-                    "n=%-6d | Linear: %-10d | Binária: %-10d%n",
-                    n, tempoLinear, tempoBinaria
-            );
-
-            /*
-             * Salva CSV
-             */
-            CSVExporter.adicionarLinha(
-                    caminhoCSV,
-                    n + "," + tempoLinear + "," + tempoBinaria
-            );
+            resultados.add(new String[]{
+                    String.valueOf(n),
+                    "busca",
+                    "BuscaBinaria",
+                    String.valueOf(fim - inicio)
+            });
         }
 
-        System.out.println("\nCSV salvo em: " + caminhoCSV);
+        CSVExporter.salvar("resultados/busca.csv", resultados);
 
-        /*
-         * Gera gráfico
-         */
-        GeradorGraficoCSV.gerarGrafico(
-                caminhoCSV,
-                caminhoGrafico
-        );
-
-        System.out.println("Gráfico salvo em: " + caminhoGrafico);
+        System.out.println("✅ Experimento de busca finalizado.");
     }
 }

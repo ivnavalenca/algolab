@@ -2,29 +2,14 @@ package br.upe.analisealgoritmos.busca;
 
 /*
  * ============================================================
- * BUSCA LINEAR (Strategy Pattern)
+ * CLASSE: BuscaLinear
  * ============================================================
  *
- * IDEIA:
- * Percorre o vetor do início ao fim procurando o elemento.
+ * OBJETIVO:
+ * Implementar busca linear.
  *
- * ============================================================
  * COMPLEXIDADE:
- *
- * Melhor caso: O(1)
- *  → elemento está na primeira posição
- *
- * Caso médio: O(n)
- *
- * Pior caso: O(n)
- *  → elemento está no final ou não existe
- *
- * ============================================================
- * CARACTERÍSTICAS:
- *
- * ✔ Simples
- * ✔ Funciona com vetor NÃO ordenado
- * ❌ Ineficiente para grandes volumes
+ * O(n)
  *
  * ============================================================
  */
@@ -32,39 +17,19 @@ package br.upe.analisealgoritmos.busca;
 public class BuscaLinear implements Buscador {
 
     /*
-     * Método de busca
+     * ============================================================
+     * MÉTODO DE BUSCA
+     * ============================================================
      */
     @Override
-    public int buscar(int[] vetor, int chave) {
+    public int buscar(int[] vetor, int alvo) {
 
-        /*
-         * Percorre todo o vetor
-         */
         for (int i = 0; i < vetor.length; i++) {
-
-            /*
-             * Compara com a chave
-             */
-            if (vetor[i] == chave) {
-
-                /*
-                 * Retorna índice encontrado
-                 */
+            if (vetor[i] == alvo) {
                 return i;
             }
         }
 
-        /*
-         * Não encontrou
-         */
         return -1;
-    }
-
-    /*
-     * Nome do algoritmo
-     */
-    @Override
-    public String getNome() {
-        return "BuscaLinear";
     }
 }

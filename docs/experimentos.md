@@ -1,140 +1,134 @@
-# 📊 Experimentos
+# 🧪 Experimentos
 
-Esta seção descreve detalhadamente os experimentos realizados, com o
-objetivo de analisar empiricamente o comportamento dos algoritmos
-estudados e validar suas complexidades assintóticas.
+## 1. Objetivo
 
-------------------------------------------------------------------------
+Os experimentos têm como objetivo avaliar empiricamente o desempenho de diferentes algoritmos em cenários variados, permitindo a comparação prática entre suas características.
 
-## 🔍 Experimento 1: Busca
+---
 
-### 🎯 Objetivo
+## 2. Configuração Experimental
 
-Comparar o desempenho de algoritmos de busca em função do tamanho da
-entrada.
+### Ambiente de Execução
 
-### ⚙️ Algoritmos analisados
+Os experimentos são executados em ambiente controlado, utilizando:
 
--   Busca Linear → **O(n)**
--   Busca Binária → **O(log n)**
+* Máquina virtual (CI/CD)
+* Execução automatizada via GitHub Actions
+* Java 21
 
-### 🧪 Metodologia
+---
 
--   Vetores aleatórios foram gerados
--   A chave buscada foi selecionada dentro do vetor
--   Para a busca binária, o vetor foi previamente ordenado
+### Parâmetros
 
-### 📊 Análise esperada
+Os experimentos utilizam diferentes tamanhos de entrada:
 
-A busca linear percorre todos os elementos, enquanto a busca binária
-reduz o espaço de busca pela metade a cada iteração.
+* 100
+* 1.000
+* 5.000
+* 10.000
 
-### 💡 Interpretação esperada
+---
 
-Com o aumento de n, a busca binária apresenta crescimento muito inferior
-à busca linear.
+### Cenários de Entrada
 
-------------------------------------------------------------------------
+Os algoritmos são testados em diferentes cenários:
 
-## 🔄 Experimento 2: Ordenação
+* dados aleatórios
+* dados ordenados
+* dados parcialmente ordenados
 
-### 🎯 Objetivo
+---
 
-Comparar algoritmos de ordenação com diferentes complexidades.
+## 3. Experimentos Realizados
 
-### ⚙️ Algoritmos O(n²)
+### 🔹 Ordenação
 
--   BubbleSort
--   InsertionSort
--   SelectionSort
+Algoritmos analisados:
 
-### ⚙️ Algoritmos O(n log n)
+* QuickSort
+* MergeSort
+* BubbleSort
 
--   MergeSort
--   QuickSort
+Métricas coletadas:
 
-### 🧪 Metodologia
+* tempo de execução
+* variabilidade
 
--   Vetores aleatórios foram utilizados
--   Cada algoritmo recebeu a mesma entrada (uso de clone)
+---
 
-### 📊 Análise esperada
+### 🔹 Busca
 
-Algoritmos quadráticos apresentam crescimento acelerado, enquanto
-algoritmos O(n log n) são mais eficientes para grandes entradas.
+Algoritmos analisados:
 
-### 💡 Interpretação esperada
+* Busca Linear
+* Busca Binária
 
-Para valores grandes de n, algoritmos O(n²) tornam-se inviáveis.
+Observação: a busca binária requer dados previamente ordenados.
 
-------------------------------------------------------------------------
+---
 
-## 🟢 Experimento 3: Ordenação por Casos
+### 🔹 Estruturas de Dados
 
-### 🎯 Objetivo
+Estruturas analisadas:
 
-Analisar o impacto da estrutura da entrada no desempenho dos algoritmos.
+* Vetor
+* Tabela Hash
 
-### ⚙️ Tipos de entrada
+Operação analisada:
 
--   Melhor caso → vetor ordenado
--   Caso médio → vetor aleatório
--   Pior caso → vetor invertido
+* inserção
 
-### 📊 Análise esperada
+---
 
--   InsertionSort melhora significativamente no melhor caso
--   SelectionSort mantém comportamento constante O(n²)
+### 🔹 Grafos
 
-### 💡 Interpretação esperada
+Algoritmos analisados:
 
-Algoritmos adaptativos se beneficiam de entradas ordenadas.
+* BFS
+* DFS
 
-------------------------------------------------------------------------
+---
 
-## 🧱 Experimento 4: Estruturas de Dados
+## 4. Procedimento
 
-### 🎯 Objetivo
+Para cada experimento:
 
-Comparar o impacto da estrutura de dados no tempo de acesso.
+1. Geração dos dados
+2. Execução do algoritmo
+3. Medição do tempo
+4. Armazenamento em CSV
+5. Repetição (quando aplicável)
 
-### ⚙️ Estruturas analisadas
+---
 
--   Vetor → busca linear (**O(n)**)
--   Tabela Hash → acesso direto (**O(1)** em média)
+## 5. Coleta de Dados
 
-### 📊 Análise esperada
+Os dados são armazenados no formato:
 
-A tabela hash apresenta desempenho superior devido ao acesso direto por
-função de dispersão.
+tamanho,cenario,algoritmo,tempo
 
-### 💡 Interpretação esperada
+---
 
-A escolha da estrutura de dados pode impactar mais que a escolha do
-algoritmo.
+## 6. Automação
 
-------------------------------------------------------------------------
+Todos os experimentos são executados automaticamente via CI/CD, garantindo:
 
-## 🎯 Síntese dos Experimentos
+* consistência
+* reprodutibilidade
+* atualização contínua
 
-Os experimentos foram projetados para:
+---
 
--   validar empiricamente a teoria de complexidade\
--   comparar algoritmos sob diferentes condições\
--   evidenciar a importância da escolha do algoritmo e da estrutura de
-    dados
+## 7. Histórico
 
-------------------------------------------------------------------------
+Cada execução gera um novo conjunto de dados, permitindo:
 
-## 🔗 Relação Teoria vs Prática
+* comparação entre execuções
+* análise temporal
+* detecção de regressões
 
-Os resultados experimentais permitem observar, na prática, o
-comportamento previsto pela análise assintótica, reforçando sua
-importância no desenvolvimento de soluções eficientes.
+---
 
-------------------------------------------------------------------------
+## 8. Síntese
 
-## 💡 Observação Final
-
-Os resultados devem ser interpretados como tendências de crescimento, e
-não valores absolutos.
+Os experimentos foram projetados para fornecer uma base sólida para análise comparativa, garantindo confiabilidade e relevância dos resultados obtidos.

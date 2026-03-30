@@ -1,0 +1,41 @@
+name: Benchmark
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  run-benchmark:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Run project
+        run: ./gradlew run
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      - name: Install deps
+        run: pip install pandas matplotlib
+
+      - name: Generate chart
+        run: python scripts/generate_chart.py
+
+      - name: Commit results
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add resultados/
+          git commit -m "Atualiza gráficos automaticamente" || echo "Sem mudanças"
+          git push

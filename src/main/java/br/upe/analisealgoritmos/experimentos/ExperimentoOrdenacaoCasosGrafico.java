@@ -1,64 +1,89 @@
 package br.upe.analisealgoritmos.experimentos;
 
-import br.upe.analisealgoritmos.ordenacao.*;
-import br.upe.analisealgoritmos.utils.GeradorVetor;
+/*
+ * ============================================================
+ * IMPORTS
+ * ============================================================
+ */
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import br.upe.analisealgoritmos.ordenacao.BubbleSort;
+import br.upe.analisealgoritmos.ordenacao.InsertionSort;
+import br.upe.analisealgoritmos.ordenacao.MergeSort;
+import br.upe.analisealgoritmos.ordenacao.Ordenador;
+import br.upe.analisealgoritmos.ordenacao.QuickSort;
+import br.upe.analisealgoritmos.ordenacao.SelectionSort;
+import br.upe.analisealgoritmos.utils.CSVExporter;
+import br.upe.analisealgoritmos.utils.GeradorDados;
 
 /*
  * ============================================================
- * EXPERIMENTO DE ORDENAÇÃO POR CASOS (VERSÃO PROFISSIONAL)
+ * CLASSE: ExperimentoOrdenacaoCasosGrafico
  * ============================================================
  *
- * Analisa:
- * ✔ Melhor caso (vetor ordenado)
- * ✔ Caso médio (vetor aleatório)
- * ✔ Pior caso (vetor invertido)
+ * OBJETIVO:
+ * Avaliar algoritmos em diferentes cenários:
+ * - aleatório
+ * - ordenado
+ * - reverso
  *
  * ============================================================
  */
 
 public class ExperimentoOrdenacaoCasosGrafico {
 
-    private static final int EXECUCOES = 10;
-
     public static void executar() {
 
-        int[] tamanhos = {1000, 2000, 5000, 10000};
+        int[] tamanhos = {100, 1000, 5000};
+        List<String[]> resultados = new ArrayList<>();
 
-        TipoOrdenacao[] algoritmos = {
-                TipoOrdenacao.BUBBLE,
-                TipoOrdenacao.INSERTION,
-                TipoOrdenacao.SELECTION,
-                TipoOrdenacao.MERGE,
-                TipoOrdenacao.QUICK
-        };
-
-        BenchmarkRunner runner = new BenchmarkRunner(EXECUCOES);
-
-        System.out.println("=== ORDENAÇÃO POR CASOS ===");
+        List<Ordenador> algoritmos = List.of(
+                new BubbleSort(),
+                new InsertionSort(),
+                new SelectionSort(),
+                new MergeSort(),
+                new QuickSort()
+        );
 
         for (int n : tamanhos) {
 
-            System.out.println("\nTamanho: " + n);
+            Map<String, int[]> cenarios = Map.of(
+                    "aleatorio", GeradorDados.gerarVetorAleatorio(n),
+                    "ordenado", GeradorDados.gerarVetorOrdenado(n),
+                    "reverso", GeradorDados.gerarVetorReverso(n)
+            );
 
-            int[] melhorCaso = GeradorVetor.gerarOrdenado(n);
-            int[] casoMedio = GeradorVetor.gerarAleatorio(n);
-            int[] piorCaso = GeradorVetor.gerarInvertido(n);
+            for (Map.Entry<String, int[]> entry : cenarios.entrySet()) {
 
-            for (TipoOrdenacao tipo : algoritmos) {
+                String cenario = entry.getKey();
+                int[] base = entry.getValue();
 
-                Ordenador algoritmo = FabricaOrdenadores.criar(tipo);
+                for (Ordenador algoritmo : algoritmos) {
 
-                long tempoMelhor = runner.executarBenchmark(algoritmo, melhorCaso);
-                long tempoMedio = runner.executarBenchmark(algoritmo, casoMedio);
-                long tempoPior = runner.executarBenchmark(algoritmo, piorCaso);
+                    int[] vetor = Arrays.copyOf(base, base.length);
 
-                System.out.println(
-                        algoritmo.getNome()
-                        + " → Melhor: " + tempoMelhor + " ns"
-                        + " | Médio: " + tempoMedio + " ns"
-                        + " | Pior: " + tempoPior + " ns"
-                );
+                    long inicio = System.nanoTime();
+
+                    algoritmo.ordenar(vetor);
+
+                    long fim = System.nanoTime();
+
+                    resultados.add(new String[]{
+                            String.valueOf(n),
+                            cenario,
+                            algoritmo.nome(), // ✔ CORREÇÃO AQUI
+                            String.valueOf(fim - inicio)
+                    });
+                }
             }
         }
+
+        CSVExporter.salvar("resultados/ordenacao_casos.csv", resultados);
+
+        System.out.println("✅ Experimento de ordenação por casos finalizado.");
     }
 }

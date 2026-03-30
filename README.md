@@ -1,113 +1,139 @@
-# 📊 Análise de Algoritmos -- Experimentos Computacionais
+# 🚀 Algolab
 
-**Disciplina:** Análise de Algoritmos\
-**Professor:** Raphael Dourado\
-**Aluna:** Ivna Valença de Oliveira
+Framework para análise de desempenho de algoritmos com geração automática de métricas, arquivos CSV e gráficos.
 
-------------------------------------------------------------------------
+---
 
-## 🎯 Objetivo
+## 📊 Visão Geral
 
-Este projeto tem como objetivo analisar experimentalmente o desempenho
-de algoritmos de busca e ordenação em diferentes cenários, validando
-empiricamente suas complexidades.
+O **Algolab** é uma plataforma experimental para avaliar o desempenho de algoritmos de forma prática, permitindo:
 
-------------------------------------------------------------------------
+* execução de benchmarks
+* coleta de métricas de tempo
+* geração automática de gráficos
+* comparação entre algoritmos
 
-## 🧠 Metodologia
+---
 
--   Execução múltipla (20 execuções)
--   Remoção de outliers
--   Uso de System.nanoTime()
--   Medição de tempo e memória
--   Testes em múltiplos cenários:
-    -   Aleatório
-    -   Ordenado
-    -   Reverso
-    -   Quase ordenado
--   Exportação para CSV
--   Geração automática de gráficos
+## 🏷️ Status
 
-------------------------------------------------------------------------
+![Java](https://img.shields.io/badge/Java-21-blue)
+![Build](https://img.shields.io/badge/build-passing-brightgreen)
+![Status](https://img.shields.io/badge/status-active-success)
 
-## 🏗️ Arquitetura
+---
 
--   Strategy Pattern
--   Factory Pattern
--   Separação de responsabilidades
--   Pipeline automatizado
--   Gerenciamento de resultados por execução
+## ✨ Funcionalidades
 
-------------------------------------------------------------------------
+* 🔁 Execução automatizada de benchmarks
+* 📁 Geração de resultados em CSV
+* 📊 Geração automática de gráficos (.png)
+* ⚙️ Arquitetura modular (busca, ordenação, estruturas)
+* 📈 Comparação entre algoritmos
+* 🧪 Execução reprodutível
 
-## 🔍 Algoritmos
+---
 
-### Busca
+## 📊 Exemplo de Resultado
 
--   Linear --- O(n)
--   Binária --- O(log n)
+Após execução, o projeto gera:
 
-### Ordenação
-
--   Bubble, Insertion, Selection --- O(n²)
--   Merge, Quick --- O(n log n)
--   Arrays.sort() --- baseline
-
-------------------------------------------------------------------------
-
-## ▶️ Execução
-
-``` bash
-gradle run --args="benchmark"
+```text
+resultados/
+├── ordenacao.csv
+├── busca.csv
+├── estruturas.csv
+└── graficos/
+    ├── ordenacao.png
+    ├── busca.png
+    └── estruturas.png
 ```
 
-------------------------------------------------------------------------
+### 📈 Gráfico de desempenho
 
-## 📁 Estrutura de Resultados
+![Desempenho](resultados/graficos/ordenacao.png)
 
-    resultados/
-     └── run_YYYY-MM-DD_HH-MM-SS/
-          ├── ordenacao.csv
-          ├── ordenacao_tempo.png
-          ├── ordenacao_memoria.png
-          ├── busca.csv
-          ├── busca_grafico.png
+---
 
-------------------------------------------------------------------------
+## 🚀 Como Executar
 
-## 🤖 Interpretação Automática
+### ✔ Pré-requisitos
 
-### 📊 Crescimento
+* Java 21
+* Gradle
 
--   Algoritmos O(n²) crescem rapidamente
--   Algoritmos O(n log n) escalam melhor
+---
 
-### ⚡ Busca
+### ▶️ Rodar o projeto
 
--   Linear cresce com n
--   Binária mantém desempenho estável
+```bash
+./gradlew run
+```
 
-### 📉 Cenários
+---
 
--   Ordenado → melhor caso para alguns algoritmos
--   Reverso → pior caso
--   Quase ordenado → cenário realista
+## 📂 Estrutura do Projeto
 
-### 💾 Memória
+```text
+src/main/java/br/upe/analisealgoritmos
+├── busca/          # algoritmos de busca
+├── ordenacao/      # algoritmos de ordenação
+├── estruturas/     # estruturas de dados
+├── utils/          # utilitários (CSV, gráficos)
+└── experimentos/   # execução dos testes
+```
 
--   MergeSort consome mais memória
--   QuickSort é mais eficiente (in-place)
+---
 
-------------------------------------------------------------------------
+## 🧠 Conceitos Aplicados
 
-## 🧠 Conclusão
+* Análise de algoritmos
+* Complexidade computacional (Big-O)
+* Benchmarking
+* Estruturas de dados
+* Programação orientada a objetos
+* Separação de responsabilidades
 
-Os resultados confirmam a teoria e demonstram que o desempenho depende
-não apenas do tamanho da entrada, mas também do cenário e da estrutura
-dos dados.
+---
 
-------------------------------------------------------------------------
+## 📌 Exemplos de Algoritmos
 
-## 📎 Licença
+### 🔹 Ordenação
 
-Projeto acadêmico para fins educacionais.
+* Bubble Sort
+* Insertion Sort
+* Selection Sort
+* Merge Sort
+* Quick Sort
+
+### 🔹 Busca
+
+* Busca Linear
+* Busca Binária
+
+### 🔹 Estruturas
+
+* Vetor Dinâmico
+* Tabela Hash (Linear Probing)
+
+---
+
+## 🔮 Próximos Passos
+
+* 🌐 Dashboard web interativo
+* 📊 Comparação histórica de execuções
+* 🤖 Integração com CI/CD
+* 📉 Análise estatística avançada
+* 📦 Exportação de relatórios em PDF
+
+---
+
+## 👩‍💻 Autoria
+
+Projeto desenvolvido para estudo de análise de algoritmos e experimentação prática.
+
+---
+
+## 📜 Licença
+
+Este projeto é de uso acadêmico e educacional.

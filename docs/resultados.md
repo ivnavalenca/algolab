@@ -1,123 +1,173 @@
-# 📈 Resultados
+# 📊 Resultados e Análise
 
-Esta seção apresenta os resultados obtidos a partir dos experimentos
-realizados, analisando o comportamento dos algoritmos em função do
-tamanho da entrada (n) e validando suas complexidades assintóticas.
+## 1. Visão Geral
 
-------------------------------------------------------------------------
+Os resultados obtidos neste projeto são fruto da execução experimental de diferentes algoritmos, utilizando múltiplos tamanhos de entrada e coleta automatizada de métricas.
 
-## 📁 Local dos Resultados
+A análise considera:
 
-Os gráficos são gerados automaticamente na pasta:
+* tempo de execução
+* comportamento assintótico observado
+* estabilidade (variabilidade)
+* comparação entre algoritmos
+* evolução ao longo do tempo
 
-    resultados/
+---
 
-------------------------------------------------------------------------
+## 2. Resultados Experimentais
 
-## 📊 Arquivos Gerados
+Os dados coletados são armazenados em arquivos CSV e utilizados para geração de gráficos.
 
--   busca_final.png
--   ordenacao_final.png
--   ordenacao_melhor.png
--   ordenacao_medio.png
--   ordenacao_pior.png
--   estruturas.png
+Cada linha representa uma execução no formato:
 
-------------------------------------------------------------------------
+tamanho,cenario,algoritmo,tempo
 
-## 📊 Descrição dos Gráficos
+---
 
-Os gráficos representam o **tempo médio de execução (em nanossegundos)**
-em função do tamanho da entrada (n).
+## 3. Análise dos Algoritmos de Ordenação
 
-Cada curva corresponde a um algoritmo, permitindo comparar seu
-crescimento assintótico.
+### 🔹 QuickSort
 
-------------------------------------------------------------------------
+* Apresenta excelente desempenho médio
+* Baixa variabilidade
+* Melhor desempenho na maioria dos cenários
 
-## 📈 Análise Detalhada
+### 🔹 MergeSort
 
-### 🔍 Busca
+* Desempenho consistente
+* Maior uso de memória
+* Estável em diferentes entradas
 
--   Busca Linear → crescimento proporcional → **O(n)**
--   Busca Binária → crescimento logarítmico → **O(log n)**
+### 🔹 BubbleSort
 
-**Interpretação:** A busca binária apresenta crescimento muito mais
-lento, pois divide o espaço de busca a cada iteração.
+* Desempenho significativamente inferior
+* Crescimento quadrático evidente
+* Utilizado como referência de pior caso
 
-------------------------------------------------------------------------
+---
 
-### 🔄 Ordenação
+## 4. Análise de Busca
 
--   Algoritmos quadráticos → crescimento acelerado → **O(n²)**
--   Algoritmos eficientes → crescimento controlado → **O(n log n)**
+### 🔹 Busca Linear
 
-**Interpretação:** Para grandes valores de n, algoritmos O(n²) tornam-se
-inviáveis, enquanto O(n log n) continuam escaláveis.
+* Tempo cresce linearmente com o tamanho da entrada
+* Simples, porém pouco eficiente em grandes volumes
 
-------------------------------------------------------------------------
+### 🔹 Busca Binária
 
-### 🟢 Melhor Caso
+* Desempenho logarítmico
+* Necessita dados ordenados
+* Muito superior para grandes entradas
 
--   InsertionSort → comportamento próximo de **O(n)**
--   SelectionSort → mantém **O(n²)**
+---
 
-**Interpretação:** Algoritmos adaptativos se beneficiam de entradas já
-ordenadas.
+## 5. Estruturas de Dados
 
-------------------------------------------------------------------------
+### 🔹 Vetor
 
-### 🟡 Caso Médio
+* Inserção simples
+* Boa performance em acesso direto
 
--   Comportamento consistente com a teoria
--   O(n²) começa a apresentar degradação
+### 🔹 Tabela Hash
 
-**Interpretação:** Representa cenários reais de uso.
+* Inserção eficiente
+* Dependente da função de hash
+* Pode sofrer colisões
 
-------------------------------------------------------------------------
+---
 
-### 🔴 Pior Caso
+## 6. Gráficos Gerados
 
--   Algoritmos O(n²) atingem custo máximo
--   QuickSort pode degradar dependendo do pivô
--   MergeSort mantém estabilidade → **O(n log n)**
+O sistema gera automaticamente:
 
-**Interpretação:** Algoritmos com desempenho garantido são mais seguros
-em aplicações críticas.
+### 📈 Gráfico Linear
 
-------------------------------------------------------------------------
+Permite observar o crescimento do tempo conforme o tamanho da entrada.
 
-### 🧱 Estruturas
+### 📈 Gráfico Logarítmico
 
--   Vetor → busca sequencial → **O(n)**
--   Hash → acesso direto → **O(1)** em média
+Facilita a comparação entre algoritmos com diferentes ordens de grandeza.
 
-**Interpretação:** Estruturas de dados eficientes reduzem drasticamente
-o tempo de execução.
+### 📊 Gráfico Estatístico
 
-------------------------------------------------------------------------
+Apresenta média e desvio padrão, permitindo avaliar estabilidade.
 
-## 📐 Validação Teórica
+---
 
-Os resultados experimentais confirmam a teoria de complexidade
-assintótica, demonstrando que:
+## 7. Análise de Variabilidade
 
--   O(n²) cresce rapidamente
--   O(log n) cresce lentamente
--   O(n log n) apresenta equilíbrio entre desempenho e custo
+A variabilidade é medida pelo desvio padrão:
 
-------------------------------------------------------------------------
+* valores baixos indicam estabilidade
+* valores altos indicam inconsistência
 
-## ⚠️ Limitações
+Essa análise é essencial para validar a confiabilidade dos resultados.
 
--   Resultados dependem do hardware e ambiente de execução
--   Influência da JVM (JIT, Garbage Collection)
--   Pequenas variações entre execuções
+---
 
-------------------------------------------------------------------------
+## 8. Speedup
 
-## 💡 Conclusão
+O speedup permite comparar algoritmos em relação ao mais eficiente:
 
-Os resultados demonstram que a análise assintótica é uma ferramenta
-eficaz para prever o comportamento de algoritmos, sendo confirmada por
-evidências experimentais.
+* valores próximos de 1 → desempenho similar ao melhor
+* valores maiores → pior desempenho relativo
+
+---
+
+## 9. Evolução Temporal
+
+Com o histórico de execuções, é possível observar:
+
+* melhorias ao longo do tempo
+* regressões de desempenho
+* estabilidade do sistema
+
+O gráfico temporal no README representa essa evolução.
+
+---
+
+## 10. Detecção de Regressão
+
+O sistema identifica regressões automaticamente:
+
+tempo_atual > 1.2 × tempo_anterior
+
+Quando detectada:
+
+* o CI pode falhar
+* um alerta é gerado
+* o PR recebe um relatório
+
+---
+
+## 11. Dashboard Interativo
+
+O dashboard permite:
+
+* comparar execuções
+* visualizar gráficos interativos
+* analisar ranking de algoritmos
+* observar speedup
+
+---
+
+## 12. Discussão
+
+Os resultados confirmam o comportamento esperado dos algoritmos conforme a teoria:
+
+* algoritmos O(n log n) superam O(n²)
+* algoritmos logarítmicos são mais eficientes em grandes entradas
+
+Além disso, a análise experimental evidencia fatores práticos que não aparecem na análise teórica.
+
+---
+
+## 13. Síntese
+
+Os resultados demonstram que:
+
+* a abordagem experimental é essencial
+* a automação aumenta a confiabilidade
+* a análise contínua permite evolução do sistema
+
+O projeto se consolida como uma ferramenta robusta para análise de desempenho de algoritmos.

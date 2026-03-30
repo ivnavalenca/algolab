@@ -1,100 +1,100 @@
 # 🧠 Interpretação dos Resultados
 
-Esta seção apresenta uma análise crítica dos resultados experimentais,
-relacionando-os com a teoria de complexidade de algoritmos e destacando
-implicações práticas.
+## 1. Visão Geral
 
-------------------------------------------------------------------------
+A interpretação dos resultados busca compreender o comportamento dos algoritmos além dos números, relacionando os dados obtidos com a teoria de complexidade.
 
-## 🔍 Busca (Linear vs Binária)
+---
 
--   Busca Linear → crescimento proporcional → **O(n)**
--   Busca Binária → crescimento logarítmico → **O(log n)**
+## 2. Ordenação
 
-**Interpretação:** À medida que n aumenta, a diferença entre os
-algoritmos cresce significativamente. A busca binária reduz o espaço de
-busca pela metade a cada iteração, resultando em desempenho superior.
+Os resultados demonstram claramente que:
 
-**Conclusão:** A busca binária é preferível para grandes conjuntos de
-dados, desde que os dados estejam ordenados.
+* algoritmos O(n log n) apresentam melhor desempenho
+* algoritmos O(n²) tornam-se inviáveis para grandes entradas
 
-------------------------------------------------------------------------
+### Observações:
 
-## 🔄 Ordenação (O(n²) vs O(n log n))
+* QuickSort apresentou melhor desempenho médio
+* MergeSort manteve estabilidade
+* BubbleSort teve crescimento exponencial de tempo
 
--   BubbleSort, InsertionSort, SelectionSort → **O(n²)**
--   MergeSort, QuickSort → **O(n log n)**
+---
 
-**Interpretação:** Algoritmos quadráticos apresentam crescimento
-acelerado e tornam-se impraticáveis para grandes entradas. Algoritmos
-O(n log n) mantêm crescimento controlado.
+## 3. Busca
 
-**Conclusão:** Para aplicações reais, algoritmos O(n log n) são mais
-adequados.
+A comparação evidencia que:
 
-------------------------------------------------------------------------
+* Busca Linear cresce proporcionalmente ao tamanho da entrada
+* Busca Binária é significativamente mais eficiente
 
-## 🟢 Melhor Caso
+Isso confirma a vantagem de algoritmos logarítmicos.
 
--   InsertionSort → próximo de **O(n)**
--   SelectionSort → permanece em **O(n²)**
+---
 
-**Interpretação:** Algoritmos adaptativos se beneficiam de entradas
-ordenadas, reduzindo operações desnecessárias.
+## 4. Estruturas de Dados
 
-------------------------------------------------------------------------
+Os resultados mostram que:
 
-## 🟡 Caso Médio
+* Vetores possuem inserção simples
+* Tabelas Hash oferecem melhor desempenho médio
 
--   Comportamento alinhado à teoria
--   O(n²) começa a degradar
+Entretanto, o desempenho da hash depende da distribuição dos dados.
 
-**Interpretação:** Representa o cenário mais comum em aplicações reais.
+---
 
-------------------------------------------------------------------------
+## 5. Variabilidade
 
-## 🔴 Pior Caso
+A análise do desvio padrão revela:
 
--   O(n²) atinge custo máximo
--   QuickSort pode degradar
--   MergeSort mantém **O(n log n)**
+* algoritmos eficientes tendem a ser mais estáveis
+* algoritmos menos eficientes apresentam maior variabilidade
 
-**Interpretação:** Algoritmos com desempenho garantido são mais
-previsíveis e seguros.
+---
 
-------------------------------------------------------------------------
+## 6. Speedup
 
-## 🧱 Estruturas de Dados
+O cálculo de speedup permite observar:
 
--   Vetor → **O(n)**
--   Hash → **O(1)** (média)
+* proximidade entre algoritmos eficientes
+* distância significativa em relação aos ineficientes
 
-**Interpretação:** A escolha da estrutura de dados pode impactar mais o
-desempenho do que o próprio algoritmo.
+---
 
-------------------------------------------------------------------------
+## 7. Evolução Temporal
 
-## 📐 Síntese Geral
+A análise histórica permite identificar:
 
-Os experimentos demonstram que:
+* melhorias no código
+* regressões de desempenho
+* estabilidade ao longo do tempo
 
--   A complexidade teórica é confirmada na prática
--   Algoritmos eficientes escalam melhor
--   O tipo de entrada influencia diretamente o desempenho
--   Estruturas de dados adequadas reduzem drasticamente o tempo de
-    execução
+---
 
-------------------------------------------------------------------------
+## 8. Regressões
 
-## 💡 Insight Final
+As regressões detectadas indicam:
 
-> A eficiência de um algoritmo depende da sua complexidade, da entrada e
-> da estrutura de dados utilizada.
+* impacto de mudanças no código
+* necessidade de monitoramento contínuo
 
-------------------------------------------------------------------------
+---
 
-## 🎯 Conclusão
+## 9. Relação com a Teoria
 
-A análise integrada (teórica + experimental) evidencia a importância da
-escolha adequada de algoritmos e estruturas de dados no desenvolvimento
-de sistemas eficientes e escaláveis.
+Os resultados experimentais confirmam os comportamentos esperados:
+
+* O(n log n) > O(n²)
+* O(log n) > O(n)
+
+Entretanto, fatores práticos também influenciam:
+
+* constantes ocultas
+* implementação
+* ambiente de execução
+
+---
+
+## 10. Síntese
+
+A interpretação dos resultados demonstra que a análise experimental é essencial para validar a teoria, oferecendo uma visão mais completa do desempenho dos algoritmos.

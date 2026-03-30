@@ -1,56 +1,67 @@
 package br.upe.analisealgoritmos.utils;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-
 /*
  * ============================================================
- * EXPORTADOR CSV (VERSÃO PROFISSIONAL)
+ * CLASSE: CSVExporter
  * ============================================================
  *
- * MELHORIAS:
- * ✔ cria arquivo com cabeçalho
- * ✔ adiciona linhas com segurança
- * ✔ evita sobrescrever sem querer
- * ✔ tratamento de erro
+ * OBJETIVO:
+ * Exportar resultados para arquivos CSV.
+ *
+ * FORMATO:
+ * tamanho,cenario,algoritmo,tempo
  *
  * ============================================================
  */
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.List;
 
 public class CSVExporter {
 
     /*
      * ============================================================
-     * CRIA ARQUIVO COM CABEÇALHO
+     * SALVAR CSV
      * ============================================================
      */
-    public static void criarArquivo(String caminho, String cabecalho) {
+    public static void salvar(String caminho, List<String[]> dados) {
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(caminho))) {
+        try {
 
-            writer.write(cabecalho);
-            writer.newLine();
+            /*
+             * ============================================================
+             * GARANTIR PASTA DE SAÍDA
+             * ============================================================
+             */
+            File arquivo = new File(caminho);
+            File pasta = arquivo.getParentFile();
 
-        } catch (IOException e) {
-            System.err.println("Erro ao criar CSV: " + e.getMessage());
-        }
-    }
+            if (pasta != null && !pasta.exists()) {
+                pasta.mkdirs();
+            }
 
-    /*
-     * ============================================================
-     * ADICIONA LINHA
-     * ============================================================
-     */
-    public static void adicionarLinha(String caminho, String linha) {
+            /*
+             * ============================================================
+             * ESCRITA DO CSV
+             * ============================================================
+             */
+            PrintWriter pw = new PrintWriter(arquivo);
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(caminho, true))) {
+            // Cabeçalho
+            pw.println("tamanho,cenario,algoritmo,tempo");
 
-            writer.write(linha);
-            writer.newLine();
+            for (String[] linha : dados) {
+                pw.println(String.join(",", linha));
+            }
 
-        } catch (IOException e) {
-            System.err.println("Erro ao escrever CSV: " + e.getMessage());
+            pw.close();
+
+            System.out.println("📁 CSV salvo em: " + caminho);
+
+        } catch (Exception e) {
+            System.err.println("❌ Erro ao salvar CSV:");
+            e.printStackTrace();
         }
     }
 }

@@ -2,16 +2,11 @@ package br.upe.analisealgoritmos.ordenacao;
 
 /*
  * ============================================================
- * INTERFACE ORDENADOR (Strategy Pattern)
+ * INTERFACE: Ordenador
  * ============================================================
  *
- * IDEIA:
- * Define um contrato comum para todos os algoritmos de ordenação.
- *
- * Isso permite:
- * ✔ trocar algoritmos facilmente
- * ✔ reutilizar código nos experimentos
- * ✔ aplicar boas práticas de arquitetura
+ * OBJETIVO:
+ * Padronizar algoritmos de ordenação.
  *
  * ============================================================
  */
@@ -19,12 +14,16 @@ package br.upe.analisealgoritmos.ordenacao;
 public interface Ordenador {
 
     /*
-     * Método que todo algoritmo deve implementar
+     * ============================================================
+     * MÉTODO DE ORDENAÇÃO
+     * ============================================================
      */
     void ordenar(int[] vetor);
 
     /*
-     * Nome do algoritmo (para gráficos e logs)
+     * ============================================================
+     * NOME DO ALGORITMO
+     * ============================================================
      */
-    String getNome();
+    String nome();
 }

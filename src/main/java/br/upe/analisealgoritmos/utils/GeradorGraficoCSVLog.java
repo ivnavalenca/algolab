@@ -1,7 +1,10 @@
 package br.upe.analisealgoritmos.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
@@ -13,27 +16,16 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 /*
  * ============================================================
- * GERADOR DE GRÁFICO COM ESCALA LOGARÍTMICA
+ * CLASSE: GeradorGraficoCSVLog
  * ============================================================
  *
  * OBJETIVO:
- * Melhorar a visualização quando há grande diferença entre
- * algoritmos (ex: O(n²) vs O(n log n)).
+ * Gerar gráfico em escala logarítmica para melhor comparação
+ * entre algoritmos com diferentes ordens de grandeza.
  *
- * ============================================================
- * POR QUE USAR ESCALA LOG?
- *
- * Em escala linear:
- * ❌ algoritmos rápidos ficam "achatados"
- *
- * Em escala log:
- * ✔ diferenças ficam visíveis
- *
- * ============================================================
- * RESULTADO:
- *
- * ✔ Comparação mais justa
- * ✔ Melhor análise visual
+ * MELHORIAS:
+ * ✔ Escala log no eixo Y
+ * ✔ Integração com GraficoUtils (estilo e destaque)
  *
  * ============================================================
  */
@@ -42,85 +34,97 @@ public class GeradorGraficoCSVLog {
 
     public static void gerarGraficoLog(String caminhoCSV, String caminhoSaida) {
 
-        XYSeriesCollection dataset = new XYSeriesCollection();
+        try {
 
-        try (BufferedReader br = new BufferedReader(new FileReader(caminhoCSV))) {
+            Map<String, XYSeries> seriesMap = new HashMap<>();
 
-            /*
-             * Lê cabeçalho
-             */
-            String linha = br.readLine();
-            String[] nomes = linha.split(",");
+            BufferedReader br = new BufferedReader(new FileReader(caminhoCSV));
+            String linha;
 
-            XYSeries[] series = new XYSeries[nomes.length - 1];
-
-            for (int i = 1; i < nomes.length; i++) {
-                series[i - 1] = new XYSeries(nomes[i]);
-            }
+            // pular cabeçalho
+            br.readLine();
 
             /*
-             * Lê dados
+             * ============================================================
+             * LEITURA DO CSV
+             * formato esperado:
+             * tamanho,cenario,algoritmo,tempo
+             * ============================================================
              */
             while ((linha = br.readLine()) != null) {
 
                 String[] valores = linha.split(",");
 
-                int n = Integer.parseInt(valores[0]);
+                int tamanho = Integer.parseInt(valores[0]);
+                String algoritmo = valores[2];
+                double tempo = Double.parseDouble(valores[3]);
 
-                for (int i = 1; i < valores.length; i++) {
+                // evita valores zero (log não aceita)
+                if (tempo <= 0) continue;
 
-                    long tempo = Long.parseLong(valores[i]);
-
-                    /*
-                     * Evita erro log(0)
-                     */
-                    if (tempo <= 0) tempo = 1;
-
-                    series[i - 1].add(n, tempo);
-                }
+                seriesMap.putIfAbsent(algoritmo, new XYSeries(algoritmo));
+                seriesMap.get(algoritmo).add(tamanho, tempo);
             }
 
-            for (XYSeries s : series) {
-                dataset.addSeries(s);
+            br.close();
+
+            /*
+             * ============================================================
+             * DATASET
+             * ============================================================
+             */
+            XYSeriesCollection dataset = new XYSeriesCollection();
+
+            for (XYSeries serie : seriesMap.values()) {
+                dataset.addSeries(serie);
             }
 
-        } catch (Exception e) {
-            System.err.println("Erro ao ler CSV: " + e.getMessage());
-            return;
-        }
+            /*
+             * ============================================================
+             * CRIA GRÁFICO
+             * ============================================================
+             */
+            JFreeChart chart = ChartFactory.createXYLineChart(
+                    "Comparação de Algoritmos (Escala Log)",
+                    "Tamanho da Entrada (n)",
+                    "Tempo (ns)",
+                    dataset
+            );
 
-        /*
-         * Cria gráfico
-         */
-        JFreeChart chart = ChartFactory.createXYLineChart(
-                "Comparação de Algoritmos (Escala Logarítmica)",
-                "Tamanho (n)",
-                "Tempo (ns)",
-                dataset
-        );
+            /*
+             * ============================================================
+             * APLICA ESCALA LOG NO EIXO Y
+             * ============================================================
+             */
+            XYPlot plot = chart.getXYPlot();
 
-        /*
-         * ============================================================
-         * AQUI ESTÁ A DIFERENÇA PRINCIPAL
-         * ============================================================
-         */
-        XYPlot plot = chart.getXYPlot();
+            LogarithmicAxis logAxis = new LogarithmicAxis("Tempo (log ns)");
+            plot.setRangeAxis(logAxis);
 
-        LogarithmicAxis logAxis = new LogarithmicAxis("Tempo (ns)");
-        plot.setRangeAxis(logAxis);
+            /*
+             * ============================================================
+             * APLICA ESTILO PADRÃO
+             * ============================================================
+             */
+            GraficoUtils.aplicarEstiloXY(chart, dataset);
 
-        try {
+            /*
+             * ============================================================
+             * SALVAR
+             * ============================================================
+             */
             ChartUtils.saveChartAsPNG(
-                    new java.io.File(caminhoSaida),
+                    new File(caminhoSaida),
                     chart,
                     800,
                     600
             );
 
-            System.out.println("Gráfico LOG gerado em: " + caminhoSaida);
+            System.out.println("📊 Gráfico LOG gerado em: " + caminhoSaida);
 
         } catch (Exception e) {
-            System.err.println("Erro ao salvar gráfico: " + e.getMessage());
+            System.err.println("Erro ao gerar gráfico log: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

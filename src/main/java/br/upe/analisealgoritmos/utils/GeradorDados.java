@@ -1,92 +1,77 @@
 package br.upe.analisealgoritmos.utils;
 
-import java.util.Random;
-
 /*
  * ============================================================
- * CLASSE: GERADOR DE DADOS
+ * CLASSE: GeradorDados
  * ============================================================
  *
  * OBJETIVO:
+ * Gerar dados de entrada para experimentos.
  *
- * Centralizar a geração de dados para os experimentos.
- *
- * ============================================================
- * POR QUE ISSO É IMPORTANTE?
- *
- * Evita:
- * ❌ repetição de código
- * ❌ inconsistência entre experimentos
- *
- * Permite:
- * ✔ reutilização
- * ✔ comparação justa
+ * TIPOS:
+ * - Vetor aleatório
+ * - Vetor ordenado
+ * - Vetor reverso
  *
  * ============================================================
  */
 
+import java.util.Random;
+
 public class GeradorDados {
 
     /*
-     * Gerador aleatório reutilizável
+     * ============================================================
+     * RANDOM FIXO (REPRODUTIBILIDADE)
+     * ============================================================
      */
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random(42);
 
     /*
      * ============================================================
-     * VETOR ALEATÓRIO (CASO MÉDIO)
+     * GERAR VETOR ALEATÓRIO
      * ============================================================
-     *
-     * Representa cenário real
      */
-    public static int[] vetorAleatorio(int n) {
+    public static int[] gerarVetorAleatorio(int n) {
 
-        int[] v = new int[n];
+        int[] vetor = new int[n];
 
         for (int i = 0; i < n; i++) {
-            v[i] = random.nextInt(n);
+            vetor[i] = RANDOM.nextInt(100000);
         }
 
-        return v;
+        return vetor;
     }
 
     /*
      * ============================================================
-     * VETOR ORDENADO (MELHOR CASO)
+     * GERAR VETOR ORDENADO
      * ============================================================
-     *
-     * Útil para:
-     * - InsertionSort
-     * - BubbleSort (com otimização)
      */
-    public static int[] vetorOrdenado(int n) {
+    public static int[] gerarVetorOrdenado(int n) {
 
-        int[] v = new int[n];
+        int[] vetor = new int[n];
 
         for (int i = 0; i < n; i++) {
-            v[i] = i;
+            vetor[i] = i;
         }
 
-        return v;
+        return vetor;
     }
 
     /*
      * ============================================================
-     * VETOR INVERTIDO (PIOR CASO)
+     * GERAR VETOR REVERSO
      * ============================================================
-     *
-     * Útil para:
-     * - InsertionSort
-     * - BubbleSort
      */
-    public static int[] vetorInvertido(int n) {
+    public static int[] gerarVetorReverso(int n) {
 
-        int[] v = new int[n];
+        int[] vetor = new int[n];
 
         for (int i = 0; i < n; i++) {
-            v[i] = n - i;
+            vetor[i] = n - i;
         }
 
-        return v;
+        return vetor;
     }
 }

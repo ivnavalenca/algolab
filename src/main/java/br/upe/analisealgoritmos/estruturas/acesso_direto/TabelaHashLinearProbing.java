@@ -1,27 +1,23 @@
+package br.upe.analisealgoritmos.estruturas.acesso_direto;
+
 /*
+ * ============================================================
  * CLASSE: TabelaHashLinearProbing
- *
- * Tratamento de colisão por tentativa linear.
+ * ============================================================
  */
 
 public class TabelaHashLinearProbing {
 
     private Integer[] tabela;
 
-    public TabelaHashLinearProbing(int capacidade) {
-        tabela = new Integer[capacidade];
-    }
-
-    private int hash(int chave) {
-        return chave % tabela.length;
+    public TabelaHashLinearProbing(int tamanho) {
+        tabela = new Integer[tamanho];
     }
 
     /*
-     * INSERÇÃO
-     *
-     * Complexidade:
-     * - O(1) médio
-     * - O(n) pior caso
+     * ============================================================
+     * INSERIR
+     * ============================================================
      */
     public void inserir(int valor) {
 
@@ -34,26 +30,7 @@ public class TabelaHashLinearProbing {
         tabela[i] = valor;
     }
 
-    /*
-     * BUSCA
-     *
-     * Complexidade:
-     * - O(1) médio
-     * - O(n) pior caso
-     */
-    public boolean buscar(int valor) {
-
-        int i = hash(valor);
-
-        while (tabela[i] != null) {
-
-            if (tabela[i] == valor) {
-                return true;
-            }
-
-            i = (i + 1) % tabela.length;
-        }
-
-        return false;
+    private int hash(int valor) {
+        return valor % tabela.length;
     }
 }

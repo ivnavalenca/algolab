@@ -2,25 +2,14 @@ package br.upe.analisealgoritmos.busca;
 
 /*
  * ============================================================
- * FÁBRICA DE BUSCADORES (Factory Pattern)
+ * CLASSE: FabricaBuscadores
  * ============================================================
  *
  * OBJETIVO:
- * Centralizar a criação dos algoritmos de busca.
+ * Criar instâncias de algoritmos de busca dinamicamente.
  *
- * Em vez de usar:
- *   new BuscaLinear()
- *
- * usamos:
- *   FabricaBuscadores.criar(TipoBusca.LINEAR)
- *
- * ============================================================
- * BENEFÍCIOS:
- *
- * ✔ Desacoplamento
- * ✔ Facilidade de manutenção
- * ✔ Extensibilidade
- * ✔ Código mais limpo
+ * PADRÃO:
+ * Factory Pattern
  *
  * ============================================================
  */
@@ -28,22 +17,22 @@ package br.upe.analisealgoritmos.busca;
 public class FabricaBuscadores {
 
     /*
-     * Método responsável por criar o algoritmo desejado
+     * ============================================================
+     * MÉTODO DE CRIAÇÃO
+     * ============================================================
      */
-    public static Buscador criar(TipoBusca tipo) {
+    public static Buscador criar(String tipo) {
 
-        switch (tipo) {
+        switch (tipo.toLowerCase()) {
 
-            case LINEAR:
+            case "linear":
                 return new BuscaLinear();
 
-            case BINARIA:
+            case "binaria":
                 return new BuscaBinaria();
 
             default:
-                throw new IllegalArgumentException(
-                        "Tipo de busca inválido: " + tipo
-                );
+                throw new IllegalArgumentException("Tipo inválido: " + tipo);
         }
     }
 }

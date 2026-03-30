@@ -1,5 +1,13 @@
 package br.upe.analisealgoritmos.utils;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
@@ -7,90 +15,128 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.StatisticalBarRenderer;
 import org.jfree.data.statistics.DefaultStatisticalCategoryDataset;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-
 /*
  * ============================================================
- * GRÁFICO ESTATÍSTICO POR CENÁRIO (COM ERRO REAL)
+ * CLASSE: GeradorGraficoEstatistico
+ * ============================================================
+ *
+ * OBJETIVO:
+ * Gerar gráfico com média e desvio padrão (barras de erro)
+ *
+ * MELHORIAS:
+ * ✔ Visual estatístico profissional
+ * ✔ Uso de desvio padrão
+ * ✔ Comparação robusta entre algoritmos
+ *
  * ============================================================
  */
 
 public class GeradorGraficoEstatistico {
 
-    public static void gerarTodos(String caminhoCSV, String pasta) {
+    public static void gerarGraficoEstatistico(String caminhoCSV, String caminhoSaida) {
 
-        gerarPorCenario(caminhoCSV, pasta, "aleatorio");
-        gerarPorCenario(caminhoCSV, pasta, "ordenado");
-        gerarPorCenario(caminhoCSV, pasta, "reverso");
-        gerarPorCenario(caminhoCSV, pasta, "quase");
-    }
+        try {
 
-    public static void gerarPorCenario(String caminhoCSV, String pasta, String cenarioFiltro) {
+            /*
+             * ============================================================
+             * ESTRUTURA PARA AGRUPAR DADOS
+             * ============================================================
+             */
+            Map<String, List<Double>> dados = new HashMap<>();
 
-        DefaultStatisticalCategoryDataset dataset =
-                new DefaultStatisticalCategoryDataset();
-
-        try (BufferedReader br = new BufferedReader(new FileReader(caminhoCSV))) {
-
-            br.readLine(); // header
-
+            BufferedReader br = new BufferedReader(new FileReader(caminhoCSV));
             String linha;
+
+            br.readLine(); // cabeçalho
 
             while ((linha = br.readLine()) != null) {
 
                 String[] v = linha.split(",");
 
-                int n = Integer.parseInt(v[0]);
-                String cenario = v[1];
                 String algoritmo = v[2];
+                double tempo = Double.parseDouble(v[3]);
 
-                double media = Double.parseDouble(v[3]);
-                double desvio = Double.parseDouble(v[6]);
+                dados.putIfAbsent(algoritmo, new ArrayList<>());
+                dados.get(algoritmo).add(tempo);
+            }
 
-                /*
-                 * FILTRA CENÁRIO
-                 */
-                if (!cenario.equals(cenarioFiltro)) continue;
+            br.close();
 
-                /*
-                 * eixo X = tamanho
-                 */
-                String categoria = "n=" + n;
+            /*
+             * ============================================================
+             * DATASET ESTATÍSTICO
+             * ============================================================
+             */
+            DefaultStatisticalCategoryDataset dataset =
+                    new DefaultStatisticalCategoryDataset();
 
-                dataset.add(media, desvio, algoritmo, categoria);
+            for (String alg : dados.keySet()) {
+
+                List<Double> tempos = dados.get(alg);
+
+                double media = tempos.stream().mapToDouble(Double::doubleValue).average().orElse(0);
+                double desvio = calcularDesvioPadrao(tempos);
+
+                dataset.add(media, desvio, alg, "Tempo");
             }
 
             /*
+             * ============================================================
              * CRIA GRÁFICO
+             * ============================================================
              */
             JFreeChart chart = ChartFactory.createBarChart(
-                    "Tempo - " + cenarioFiltro + " (Média ± Desvio)",
-                    "Tamanho",
+                    "Comparação Estatística de Algoritmos",
+                    "Algoritmo",
                     "Tempo (ns)",
                     dataset
             );
 
             /*
-             * RENDERER COM ERRO REAL
+             * ============================================================
+             * RENDERER (BARRAS DE ERRO)
+             * ============================================================
              */
             CategoryPlot plot = chart.getCategoryPlot();
             StatisticalBarRenderer renderer = new StatisticalBarRenderer();
+
             plot.setRenderer(renderer);
 
-            String caminhoSaida = pasta + "/tempo_" + cenarioFiltro + "_erro.png";
-
+            /*
+             * ============================================================
+             * SALVAR
+             * ============================================================
+             */
             ChartUtils.saveChartAsPNG(
-                    new java.io.File(caminhoSaida),
+                    new File(caminhoSaida),
                     chart,
-                    1000,
+                    800,
                     600
             );
 
-            System.out.println("Gráfico gerado: " + caminhoSaida);
+            System.out.println("📊 Gráfico estatístico gerado em: " + caminhoSaida);
 
         } catch (Exception e) {
-            System.err.println("Erro no gráfico: " + e.getMessage());
+            System.err.println("Erro ao gerar gráfico estatístico: " + e.getMessage());
+            e.printStackTrace();
         }
+    }
+
+    /*
+     * ============================================================
+     * CÁLCULO DO DESVIO PADRÃO
+     * ============================================================
+     */
+    private static double calcularDesvioPadrao(List<Double> valores) {
+
+        double media = valores.stream().mapToDouble(Double::doubleValue).average().orElse(0);
+
+        double soma = 0;
+
+        for (double v : valores) {
+            soma += Math.pow(v - media, 2);
+        }
+
+        return Math.sqrt(soma / valores.size());
     }
 }

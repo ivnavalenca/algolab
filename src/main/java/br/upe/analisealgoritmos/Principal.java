@@ -1,135 +1,79 @@
 package br.upe.analisealgoritmos;
 
-import java.util.Scanner;
-
-import br.upe.analisealgoritmos.experimentos.ExperimentoBuscaGrafico;
-import br.upe.analisealgoritmos.experimentos.ExperimentoEstruturasGrafico;
-import br.upe.analisealgoritmos.experimentos.ExperimentoOrdenacaoCasosGrafico;
-import br.upe.analisealgoritmos.experimentos.ExperimentoOrdenacaoGrafico;
-
 /*
  * ============================================================
- * CLASSE PRINCIPAL (VERSÃO FINAL PROFISSIONAL)
+ * CLASSE: Principal
  * ============================================================
  *
- * SUPORTA:
+ * OBJETIVO:
+ * Ponto de entrada da aplicação.
  *
- * ✔ Execução automática (benchmark)
- * ✔ Execução em ambiente sem input (CI, Codespaces)
- * ✔ Execução interativa (menu)
+ * FLUXO:
+ * 1. Executa experimentos
+ * 2. Gera CSV
+ * 3. Gera gráficos automaticamente
  *
  * ============================================================
  */
 
+import br.upe.analisealgoritmos.experimentos.ExperimentoBuscaGrafico;
+import br.upe.analisealgoritmos.experimentos.ExperimentoEstruturasGrafico;
+import br.upe.analisealgoritmos.experimentos.ExperimentoOrdenacaoGrafico;
+import br.upe.analisealgoritmos.utils.GeradorGrafico;
+
 public class Principal {
-
-    public static void main(String[] args) {
-
-        /*
-         * ============================================================
-         * MODO AUTOMÁTICO VIA ARGUMENTO
-         * ============================================================
-         */
-        if (args.length > 0 && args[0].equalsIgnoreCase("benchmark")) {
-
-            System.out.println("Modo benchmark ativado...\n");
-
-            executarTodosExperimentos();
-
-            System.out.println("\nExecução finalizada.");
-            return;
-        }
-
-        /*
-         * ============================================================
-         * AMBIENTE SEM INPUT (CI / Codespaces)
-         * ============================================================
-         */
-        if (System.console() == null) {
-
-            System.out.println("Ambiente sem entrada interativa.");
-            System.out.println("Executando experimento padrão...\n");
-
-            executarTodosExperimentos();
-
-            System.out.println("\nExecução finalizada.");
-            return;
-        }
-
-        /*
-         * ============================================================
-         * MODO INTERATIVO (LOCAL)
-         * ============================================================
-         */
-        Scanner scanner = new Scanner(System.in);
-
-        while (true) {
-
-            System.out.println("\n=== ANÁLISE DE ALGORITMOS ===");
-            System.out.println("1 - Busca");
-            System.out.println("2 - Estruturas");
-            System.out.println("3 - Ordenação");
-            System.out.println("4 - Ordenação (Casos)");
-            System.out.println("5 - Benchmark completo");
-            System.out.println("0 - Sair");
-            System.out.print("Escolha: ");
-
-            /*
-             * Evita erro de entrada inválida
-             */
-            if (!scanner.hasNextInt()) {
-                System.out.println("Entrada inválida!");
-                scanner.next(); // descarta entrada inválida
-                continue;
-            }
-
-            int opcao = scanner.nextInt();
-
-            switch (opcao) {
-
-                case 1:
-                    ExperimentoBuscaGrafico.executar();
-                    break;
-
-                case 2:
-                    ExperimentoEstruturasGrafico.executar();
-                    break;
-
-                case 3:
-                    ExperimentoOrdenacaoGrafico.executar();
-                    break;
-
-                case 4:
-                    ExperimentoOrdenacaoCasosGrafico.executar();
-                    break;
-
-                case 5:
-                    executarTodosExperimentos();
-                    break;
-
-                case 0:
-                    System.out.println("Encerrando...");
-                    scanner.close();
-                    return;
-
-                default:
-                    System.out.println("Opção inválida!");
-            }
-        }
-    }
 
     /*
      * ============================================================
-     * EXECUTA TODOS OS EXPERIMENTOS
+     * MAIN
      * ============================================================
      */
-    private static void executarTodosExperimentos() {
+    public static void main(String[] args) {
 
-        System.out.println("=== EXECUTANDO TODOS OS EXPERIMENTOS ===\n");
+        System.out.println("🚀 Iniciando execução dos experimentos...\n");
 
-        ExperimentoBuscaGrafico.executar();
-        ExperimentoEstruturasGrafico.executar();
-        ExperimentoOrdenacaoGrafico.executar();
-        ExperimentoOrdenacaoCasosGrafico.executar();
+        try {
+
+            /*
+             * ============================================================
+             * EXECUTAR EXPERIMENTOS
+             * ============================================================
+             */
+            ExperimentoOrdenacaoGrafico.executar();
+            ExperimentoBuscaGrafico.executar();
+            ExperimentoEstruturasGrafico.executar();
+
+            /*
+             * ============================================================
+             * GERAR GRÁFICOS AUTOMATICAMENTE
+             * ============================================================
+             */
+            System.out.println("\n📊 Gerando gráficos...\n");
+
+            GeradorGrafico.gerar(
+                    "resultados/ordenacao.csv",
+                    "resultados/graficos/ordenacao.png",
+                    "Desempenho de Ordenação"
+            );
+
+            GeradorGrafico.gerar(
+                    "resultados/busca.csv",
+                    "resultados/graficos/busca.png",
+                    "Desempenho de Busca"
+            );
+
+            GeradorGrafico.gerar(
+                    "resultados/estruturas.csv",
+                    "resultados/graficos/estruturas.png",
+                    "Desempenho de Estruturas"
+            );
+
+            System.out.println("\n✅ Todos os experimentos finalizados com sucesso!");
+
+        } catch (Exception e) {
+
+            System.err.println("❌ Erro durante execução:");
+            e.printStackTrace();
+        }
     }
 }

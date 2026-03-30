@@ -1,96 +1,175 @@
 # 🧪 Metodologia
 
-Esta seção descreve os procedimentos adotados para a realização dos
-experimentos, visando garantir resultados confiáveis, reprodutíveis e
-comparáveis.
+## 1. Visão Geral
 
-------------------------------------------------------------------------
+A metodologia adotada neste projeto combina experimentação prática, automação e análise estatística para avaliar o desempenho de algoritmos de forma confiável e reprodutível.
 
-## 📊 Estratégia Experimental
+O processo envolve:
 
-Os experimentos seguem as seguintes etapas:
+1. Geração de dados de entrada
+2. Execução dos algoritmos
+3. Coleta de métricas
+4. Armazenamento em CSV
+5. Geração de gráficos
+6. Análise estatística
+7. Monitoramento contínuo via CI/CD
 
-1.  Geração dos dados de entrada (aleatório, ordenado e invertido)
-2.  Execução dos algoritmos
-3.  Medição do tempo de execução
-4.  Repetição das execuções
-5.  Cálculo da média dos tempos
+---
 
-------------------------------------------------------------------------
+## 2. Geração de Dados
 
-## 🔁 Número de Execuções
+Os dados de entrada são gerados automaticamente utilizando diferentes tamanhos de vetor, como:
 
-Cada algoritmo foi executado **10 vezes** para cada tamanho de entrada.
+* 100
+* 1.000
+* 5.000
+* 10.000
 
-Essa abordagem é amplamente utilizada em experimentos computacionais
-para reduzir variações e aumentar a confiabilidade dos resultados.
+Para garantir reprodutibilidade, utiliza-se uma semente fixa na geração pseudoaleatória.
 
-------------------------------------------------------------------------
+---
 
-## ⏱️ Medição de Tempo
+## 3. Execução dos Algoritmos
 
-A medição foi realizada utilizando:
+Cada algoritmo é executado sobre os mesmos dados de entrada, garantindo comparabilidade.
 
-``` java
+Os experimentos incluem:
+
+* algoritmos de ordenação
+* algoritmos de busca
+* estruturas de dados
+* algoritmos em grafos
+
+---
+
+## 4. Medição de Tempo
+
+O tempo de execução é medido utilizando:
+
 System.nanoTime()
-```
 
-Essa função fornece medições com alta precisão, adequada para
-experimentos de curta duração.
+Essa abordagem fornece alta precisão na medição.
 
-------------------------------------------------------------------------
+---
 
-## 📉 Tratamento dos Dados
+## 5. Múltiplas Execuções
 
-Para reduzir ruídos experimentais:
+Para reduzir o impacto de variações externas, cada experimento pode ser executado múltiplas vezes.
 
--   Os tempos são armazenados em um vetor
--   Os valores são ordenados
--   O menor e o maior valor são descartados (remoção de outliers)
--   Calcula-se a média dos valores restantes
+A partir dessas execuções, são calculadas:
 
-Essa técnica melhora a estabilidade dos resultados.
+* média
+* mínimo
+* máximo
+* desvio padrão
 
-------------------------------------------------------------------------
+---
 
-## ⚙️ Influência da JVM
+## 6. Armazenamento dos Resultados
 
-A execução em Java pode sofrer influência de fatores como:
+Os resultados são armazenados em arquivos CSV com o seguinte formato:
 
--   JIT (Just-In-Time Compilation)
--   Garbage Collection
--   Otimizações em tempo de execução
+tamanho,cenario,algoritmo,tempo
 
-Esses fatores podem causar variações nos tempos medidos.
+Exemplo:
 
-------------------------------------------------------------------------
+1000,aleatorio,QuickSort,12000
 
-## 📈 Geração de Gráficos
+---
 
-Os gráficos foram gerados utilizando a biblioteca **JFreeChart**,
-permitindo visualizar o comportamento dos algoritmos em função do
-tamanho da entrada.
+## 7. Geração de Gráficos
 
-------------------------------------------------------------------------
+São gerados automaticamente três tipos de gráficos:
 
-## 🎯 Justificativa Metodológica
+### 📊 Gráfico linear
 
-A combinação de:
+* comparação direta de tempos
 
--   múltiplas execuções\
--   remoção de outliers\
--   cálculo de média
+### 📊 Gráfico logarítmico
 
-é uma prática comum em experimentos científicos, pois:
+* comparação entre ordens de grandeza
 
--   reduz interferência do sistema operacional\
--   minimiza variações da JVM\
--   aumenta a confiabilidade dos dados
+### 📊 Gráfico estatístico
 
-------------------------------------------------------------------------
+* média com barras de erro (desvio padrão)
 
-## 💡 Observação Final
+---
 
-Os resultados devem ser interpretados como **tendências de
-crescimento**, e não valores absolutos, devido às variações inerentes ao
-ambiente de execução.
+## 8. Cálculo de Speedup
+
+O speedup é calculado para comparar algoritmos:
+
+speedup = tempo_algoritmo / tempo_melhor
+
+---
+
+## 9. Pipeline Automatizado (CI/CD)
+
+O projeto utiliza integração contínua para automatizar todo o processo experimental.
+
+A cada execução do CI:
+
+1. O projeto é compilado
+2. Os benchmarks são executados
+3. Os resultados são armazenados
+4. O histórico é atualizado
+5. Gráficos são gerados
+6. Regressões são detectadas
+7. Um relatório é criado
+8. Um badge é atualizado
+
+---
+
+## 10. Detecção de Regressão
+
+A regressão é detectada automaticamente comparando execuções consecutivas:
+
+tempo_atual > 1.2 × tempo_anterior
+
+Caso detectada:
+
+* o CI pode falhar
+* um alerta é gerado
+* um comentário é feito no PR
+
+---
+
+## 11. Histórico de Execuções
+
+Cada execução é armazenada e versionada, permitindo:
+
+* análise temporal
+* comparação entre execuções
+* detecção de tendências
+
+---
+
+## 12. Dashboard Interativo
+
+Os dados são disponibilizados em um dashboard web que permite:
+
+* selecionar execuções
+* comparar algoritmos
+* visualizar ranking
+* analisar speedup
+
+---
+
+## 13. Reprodutibilidade
+
+Para garantir consistência dos resultados:
+
+* ambiente de execução padronizado (CI)
+* dados controlados
+* pipeline automatizado
+
+---
+
+## 14. Síntese
+
+A metodologia combina práticas acadêmicas e industriais, garantindo:
+
+* rigor científico
+* automação
+* escalabilidade
+* confiabilidade dos resultados
