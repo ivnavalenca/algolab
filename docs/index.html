@@ -3,20 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Algolab Dashboard</title>
+
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <h1>📊 Algolab Dashboard</h1>
 
+<!-- Seleção de tipo -->
 <select id="tipo">
     <option value="ordenacao">Ordenação</option>
     <option value="busca">Busca</option>
     <option value="estruturas">Estruturas</option>
 </select>
 
+<!-- Seleção de execuções -->
+<h3>📁 Histórico</h3>
+<select id="execucaoA"></select>
+<select id="execucaoB"></select>
+
+<button onclick="comparar()">Comparar</button>
+
+<!-- Gráfico -->
 <canvas id="grafico"></canvas>
+
+<!-- Ranking -->
+<h3>🏆 Ranking de Algoritmos</h3>
+<ul id="ranking"></ul>
 
 <script src="script.js"></script>
 

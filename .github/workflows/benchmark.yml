@@ -1,4 +1,4 @@
-name: Benchmark
+name: Benchmark + Dashboard
 
 on:
   push:
@@ -21,10 +21,10 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Dar permissão ao Gradle
+      - name: Permissão Gradle
         run: chmod +x gradlew
 
-      - name: Rodar projeto
+      - name: Rodar experimentos
         run: ./gradlew run --no-daemon
 
       - name: Setup Python
@@ -32,16 +32,24 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Instalar dependências Python
+      - name: Instalar dependências
         run: pip install pandas matplotlib
 
       - name: Gerar gráfico
         run: python scripts/generate_chart.py
 
-      - name: Commit resultados
+      - name: Gerar index.json
+        run: python scripts/generate_index.py
+
+      - name: Copiar resultados para docs
+        run: |
+          mkdir -p docs/resultados
+          cp -r resultados/* docs/resultados/
+
+      - name: Commit automático
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add resultados/
+          git add docs/resultados/
           git commit -m "Atualiza resultados automaticamente" || echo "Sem mudanças"
           git push
