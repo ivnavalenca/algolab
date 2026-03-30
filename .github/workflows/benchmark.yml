@@ -8,6 +8,9 @@ jobs:
   run-benchmark:
     runs-on: ubuntu-latest
 
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,24 +21,27 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Run project
-        run: ./gradlew run
+      - name: Dar permissão ao Gradle
+        run: chmod +x gradlew
+
+      - name: Rodar projeto
+        run: ./gradlew run --no-daemon
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.x
+          python-version: "3.x"
 
-      - name: Install deps
+      - name: Instalar dependências Python
         run: pip install pandas matplotlib
 
-      - name: Generate chart
+      - name: Gerar gráfico
         run: python scripts/generate_chart.py
 
-      - name: Commit results
+      - name: Commit resultados
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add resultados/
-          git commit -m "Atualiza gráficos automaticamente" || echo "Sem mudanças"
+          git commit -m "Atualiza resultados automaticamente" || echo "Sem mudanças"
           git push
