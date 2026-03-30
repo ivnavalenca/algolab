@@ -2,7 +2,12 @@ package br.upe.analisealgoritmos.experimentos;
 
 /*
  * ============================================================
- * IMPORTS
+ * EXPERIMENTO: BUSCA
+ * ============================================================
+ *
+ * OBJETIVO:
+ * Comparar desempenho entre Busca Linear e Binária
+ *
  * ============================================================
  */
 
@@ -16,12 +21,6 @@ import br.upe.analisealgoritmos.busca.Buscador;
 import br.upe.analisealgoritmos.utils.CSVExporter;
 import br.upe.analisealgoritmos.utils.GeradorDados;
 
-/*
- * ============================================================
- * CLASSE: ExperimentoBuscaGrafico
- * ============================================================
- */
-
 public class ExperimentoBuscaGrafico {
 
     public static void executar() {
@@ -29,11 +28,6 @@ public class ExperimentoBuscaGrafico {
         int[] tamanhos = {100, 1000, 5000};
         List<String[]> resultados = new ArrayList<>();
 
-        /*
-         * ============================================================
-         * CRIANDO BUSCADORES (OBJETOS)
-         * ============================================================
-         */
         Buscador buscaLinear = new BuscaLinear();
         Buscador buscaBinaria = new BuscaBinaria();
 
@@ -43,14 +37,10 @@ public class ExperimentoBuscaGrafico {
             int alvo = vetor[n / 2];
 
             /*
-             * ============================================================
              * BUSCA LINEAR
-             * ============================================================
              */
             long inicio = System.nanoTime();
-
-            buscaLinear.buscar(vetor, alvo); // ✔ CORREÇÃO
-
+            buscaLinear.buscar(vetor, alvo);
             long fim = System.nanoTime();
 
             resultados.add(new String[]{
@@ -61,16 +51,12 @@ public class ExperimentoBuscaGrafico {
             });
 
             /*
-             * ============================================================
-             * BUSCA BINÁRIA
-             * ============================================================
+             * BUSCA BINÁRIA (requer vetor ordenado)
              */
             Arrays.sort(vetor);
 
             inicio = System.nanoTime();
-
-            buscaBinaria.buscar(vetor, alvo); // ✔ CORREÇÃO
-
+            buscaBinaria.buscar(vetor, alvo);
             fim = System.nanoTime();
 
             resultados.add(new String[]{
@@ -81,7 +67,15 @@ public class ExperimentoBuscaGrafico {
             });
         }
 
+        /*
+         * ============================================================
+         * EXPORTAÇÃO
+         * ============================================================
+         */
         CSVExporter.salvar("resultados/busca.csv", resultados);
+
+        // 🔥 ESSENCIAL — histórico
+        CSVExporter.salvarComHistorico("resultados", "busca", resultados);
 
         System.out.println("✅ Experimento de busca finalizado.");
     }

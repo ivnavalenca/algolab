@@ -1,3 +1,5 @@
+package br.upe.analisealgoritmos.estruturas.acesso_direto;
+
 /*
  * Estrutura baseada em array que cresce automaticamente.
  *
@@ -12,7 +14,6 @@ public class VetorDinamico {
 
     /*
      * INSERÇÃO
-     *
      * Complexidade:
      * - O(1) amortizado
      * - O(n) quando redimensiona
@@ -28,8 +29,6 @@ public class VetorDinamico {
 
     /*
      * REDIMENSIONAMENTO
-     *
-     * Complexidade: O(n)
      */
     private void redimensionar() {
 

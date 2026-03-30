@@ -2,61 +2,34 @@ package br.upe.analisealgoritmos.experimentos;
 
 /*
  * ============================================================
- * IMPORTS
- * ============================================================
- */
-
-import br.upe.analisealgoritmos.ordenacao.*;
-import br.upe.analisealgoritmos.utils.GeradorDados;
-import br.upe.analisealgoritmos.utils.CSVExporter;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
-
-/*
- * ============================================================
- * CLASSE: ExperimentoOrdenacaoGrafico
+ * EXPERIMENTO: ORDENAÇÃO
  * ============================================================
  *
  * OBJETIVO:
- * Comparar desempenho de algoritmos de ordenação.
- *
- * ALGORITMOS:
- * - BubbleSort
- * - InsertionSort
- * - SelectionSort
- * - MergeSort
- * - QuickSort
- *
- * SAÍDA:
- * CSV com resultados para geração de gráficos.
+ * Comparar algoritmos de ordenação
  *
  * ============================================================
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
+import br.upe.analisealgoritmos.ordenacao.BubbleSort;
+import br.upe.analisealgoritmos.ordenacao.InsertionSort;
+import br.upe.analisealgoritmos.ordenacao.MergeSort;
+import br.upe.analisealgoritmos.ordenacao.Ordenador;
+import br.upe.analisealgoritmos.ordenacao.QuickSort;
+import br.upe.analisealgoritmos.ordenacao.SelectionSort;
+import br.upe.analisealgoritmos.utils.CSVExporter;
+import br.upe.analisealgoritmos.utils.GeradorDados;
+
 public class ExperimentoOrdenacaoGrafico {
 
-    /*
-     * ============================================================
-     * MÉTODO PRINCIPAL DO EXPERIMENTO
-     * ============================================================
-     */
     public static void executar() {
 
-        /*
-         * ============================================================
-         * CONFIGURAÇÃO
-         * ============================================================
-         */
         int[] tamanhos = {100, 1000, 5000};
         List<String[]> resultados = new ArrayList<>();
 
-        /*
-         * ============================================================
-         * LISTA DE ALGORITMOS
-         * ============================================================
-         */
         List<Ordenador> algoritmos = List.of(
                 new BubbleSort(),
                 new InsertionSort(),
@@ -65,54 +38,34 @@ public class ExperimentoOrdenacaoGrafico {
                 new QuickSort()
         );
 
-        /*
-         * ============================================================
-         * LOOP PRINCIPAL
-         * ============================================================
-         */
         for (int n : tamanhos) {
 
-            /*
-             * ============================================================
-             * GERAÇÃO DO VETOR BASE
-             * ============================================================
-             */
             int[] vetorBase = GeradorDados.gerarVetorAleatorio(n);
 
-            /*
-             * ============================================================
-             * EXECUÇÃO DOS ALGORITMOS
-             * ============================================================
-             */
             for (Ordenador algoritmo : algoritmos) {
 
-                /*
-                 * IMPORTANTE:
-                 * Clonar vetor para evitar interferência entre algoritmos
-                 */
-                int[] vetor = Arrays.copyOf(vetorBase, vetorBase.length);
+                int[] copia = vetorBase.clone();
 
                 long inicio = System.nanoTime();
-
-                algoritmo.ordenar(vetor);
-
+                algoritmo.ordenar(copia);
                 long fim = System.nanoTime();
 
                 resultados.add(new String[]{
                         String.valueOf(n),
                         "ordenacao",
-                        algoritmo.nome(),
+                        algoritmo.getClass().getSimpleName(),
                         String.valueOf(fim - inicio)
                 });
             }
         }
 
         /*
-         * ============================================================
-         * EXPORTAÇÃO DOS RESULTADOS
-         * ============================================================
+         * EXPORTAÇÃO
          */
         CSVExporter.salvar("resultados/ordenacao.csv", resultados);
+
+        // 🔥 ESSENCIAL — histórico
+        CSVExporter.salvarComHistorico("resultados", "ordenacao", resultados);
 
         System.out.println("✅ Experimento de ordenação finalizado.");
     }

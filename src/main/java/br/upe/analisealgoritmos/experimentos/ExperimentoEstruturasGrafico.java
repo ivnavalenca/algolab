@@ -2,63 +2,33 @@ package br.upe.analisealgoritmos.experimentos;
 
 /*
  * ============================================================
- * IMPORTS
+ * EXPERIMENTO: ESTRUTURAS DE DADOS
+ * ============================================================
+ *
+ * OBJETIVO:
+ * Comparar desempenho de inserção em estruturas
+ *
  * ============================================================
  */
+
+import br.upe.analisealgoritmos.estruturas.acesso_direto.VetorDinamico;
+import br.upe.analisealgoritmos.estruturas.acesso_direto.TabelaHashLinearProbing;
+import br.upe.analisealgoritmos.utils.CSVExporter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import br.upe.analisealgoritmos.estruturas.acesso_direto.TabelaHashLinearProbing;
-import br.upe.analisealgoritmos.estruturas.lineares.VetorDinamico;
-import br.upe.analisealgoritmos.utils.CSVExporter;
-
-/*
- * ============================================================
- * CLASSE: ExperimentoEstruturasGrafico
- * ============================================================
- *
- * OBJETIVO:
- * Avaliar desempenho de estruturas de dados.
- *
- * ESTRUTURAS:
- * - VetorDinâmico
- * - Hash (Linear Probing)
- *
- * MÉTRICA:
- * Tempo de inserção
- *
- * ============================================================
- */
-
 public class ExperimentoEstruturasGrafico {
 
-    /*
-     * ============================================================
-     * MÉTODO PRINCIPAL
-     * ============================================================
-     */
     public static void executar() {
 
-        /*
-         * ============================================================
-         * CONFIGURAÇÃO
-         * ============================================================
-         */
         int[] tamanhos = {100, 1000, 5000};
         List<String[]> resultados = new ArrayList<>();
 
-        /*
-         * ============================================================
-         * LOOP PRINCIPAL
-         * ============================================================
-         */
         for (int n : tamanhos) {
 
             /*
-             * ============================================================
-             * TESTE: Vetor Dinâmico
-             * ============================================================
+             * VETOR DINÂMICO
              */
             VetorDinamico vetor = new VetorDinamico();
 
@@ -78,9 +48,7 @@ public class ExperimentoEstruturasGrafico {
             });
 
             /*
-             * ============================================================
-             * TESTE: Hash Linear Probing
-             * ============================================================
+             * HASH LINEAR PROBING
              */
             TabelaHashLinearProbing hash = new TabelaHashLinearProbing(n);
 
@@ -101,11 +69,12 @@ public class ExperimentoEstruturasGrafico {
         }
 
         /*
-         * ============================================================
          * EXPORTAÇÃO
-         * ============================================================
          */
         CSVExporter.salvar("resultados/estruturas.csv", resultados);
+
+        // 🔥 ESSENCIAL — histórico
+        CSVExporter.salvarComHistorico("resultados", "estruturas", resultados);
 
         System.out.println("✅ Experimento de estruturas finalizado.");
     }

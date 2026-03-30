@@ -27,6 +27,10 @@ jobs:
       - name: Rodar experimentos
         run: ./gradlew run --no-daemon
 
+      - name: Garantir histórico (fallback)
+        run: |
+          mkdir -p resultados/historico
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -35,21 +39,31 @@ jobs:
       - name: Instalar dependências
         run: pip install pandas matplotlib
 
-      - name: Gerar gráfico
-        run: python scripts/generate_chart.py
+      - name: Gerar gráfico (seguro)
+        run: |
+          if [ -f resultados/ordenacao.csv ]; then
+            python scripts/generate_chart.py
+          fi
 
-      - name: Gerar index.json
-        run: python scripts/generate_index.py
+      - name: Gerar index.json (seguro)
+        run: |
+          mkdir -p docs/resultados/historico
+          python scripts/generate_index.py || echo "Sem histórico ainda"
 
       - name: Copiar resultados para docs
         run: |
           mkdir -p docs/resultados
-          cp -r resultados/* docs/resultados/
+          cp -r resultados/* docs/resultados/ || echo "Nada para copiar"
 
-      - name: Commit automático
+      - name: Commit automático (à prova de erro)
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add docs/resultados/
-          git commit -m "Atualiza resultados automaticamente" || echo "Sem mudanças"
-          git push
+
+          git pull origin main --rebase || true
+
+          git add docs/resultados/ || true
+
+          git commit -m "Atualiza dashboard automaticamente" || true
+
+          git push || true
