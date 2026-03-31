@@ -12,9 +12,15 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
+      # ============================================================
+      # CHECKOUT
+      # ============================================================
       - name: Checkout
         uses: actions/checkout@v4
 
+      # ============================================================
+      # JAVA
+      # ============================================================
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -24,13 +30,31 @@ jobs:
       - name: Permissão Gradle
         run: chmod +x gradlew
 
+      # ============================================================
+      # RODAR EXPERIMENTOS
+      # ============================================================
       - name: Rodar experimentos
         run: ./gradlew run --no-daemon
 
-      - name: Garantir histórico (fallback)
+      # ============================================================
+      # GARANTIR ESTRUTURA
+      # ============================================================
+      - name: Criar pastas necessárias
         run: |
           mkdir -p resultados/historico
+          mkdir -p docs/resultados/historico
 
+      # ============================================================
+      # COPIAR RESULTADOS → DOCS (ANTES DO INDEX!)
+      # ============================================================
+      - name: Copiar resultados para docs
+        run: |
+          mkdir -p docs/resultados
+          cp -r resultados/* docs/resultados/ || echo "Nada para copiar"
+
+      # ============================================================
+      # PYTHON
+      # ============================================================
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -39,23 +63,26 @@ jobs:
       - name: Instalar dependências
         run: pip install pandas matplotlib
 
-      - name: Gerar gráfico (seguro)
+      # ============================================================
+      # GERAR GRÁFICO (OPCIONAL)
+      # ============================================================
+      - name: Gerar gráfico
         run: |
-          if [ -f resultados/ordenacao.csv ]; then
+          if [ -f docs/resultados/ordenacao.csv ]; then
             python scripts/generate_chart.py
           fi
 
-      - name: Gerar index.json (seguro)
+      # ============================================================
+      # GERAR INDEX.JSON (AGORA NO LUGAR CERTO)
+      # ============================================================
+      - name: Gerar index.json
         run: |
-          mkdir -p docs/resultados/historico
           python scripts/generate_index.py || echo "Sem histórico ainda"
 
-      - name: Copiar resultados para docs
-        run: |
-          mkdir -p docs/resultados
-          cp -r resultados/* docs/resultados/ || echo "Nada para copiar"
-
-      - name: Commit automático (à prova de erro)
+      # ============================================================
+      # COMMIT AUTOMÁTICO
+      # ============================================================
+      - name: Commit automático
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
@@ -64,6 +91,12 @@ jobs:
 
           git add docs/resultados/ || true
 
-          git commit -m "Atualiza dashboard automaticamente" || true
+          git commit -m "chore: atualiza dados do dashboard automaticamente" || true
 
           git push || true
+
+      # ============================================================
+      # LOG FINAL (BONUS)
+      # ============================================================
+      - name: Mostrar URL
+        run: echo "Dashboard: https://ivnavalenca.github.io/algolab/"
