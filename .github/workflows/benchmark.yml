@@ -12,14 +12,15 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
+
       # ============================================================
-      # CHECKOUT
+      # CHECKOUT DO REPOSITÓRIO
       # ============================================================
       - name: Checkout
         uses: actions/checkout@v4
 
       # ============================================================
-      # JAVA
+      # CONFIGURAR JAVA
       # ============================================================
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -31,13 +32,13 @@ jobs:
         run: chmod +x gradlew
 
       # ============================================================
-      # RODAR EXPERIMENTOS
+      # EXECUTAR EXPERIMENTOS
       # ============================================================
       - name: Rodar experimentos
         run: ./gradlew run --no-daemon
 
       # ============================================================
-      # GARANTIR ESTRUTURA
+      # GARANTIR ESTRUTURA DE PASTAS
       # ============================================================
       - name: Criar pastas necessárias
         run: |
@@ -45,7 +46,7 @@ jobs:
           mkdir -p docs/resultados/historico
 
       # ============================================================
-      # COPIAR RESULTADOS → DOCS (ANTES DO INDEX!)
+      # COPIAR RESULTADOS PARA DOCS (ANTES DO INDEX)
       # ============================================================
       - name: Copiar resultados para docs
         run: |
@@ -53,7 +54,7 @@ jobs:
           cp -r resultados/* docs/resultados/ || echo "Nada para copiar"
 
       # ============================================================
-      # PYTHON
+      # CONFIGURAR PYTHON
       # ============================================================
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -64,7 +65,7 @@ jobs:
         run: pip install pandas matplotlib
 
       # ============================================================
-      # GERAR GRÁFICO (OPCIONAL)
+      # GERAR GRÁFICOS (OPCIONAL)
       # ============================================================
       - name: Gerar gráfico
         run: |
@@ -73,7 +74,7 @@ jobs:
           fi
 
       # ============================================================
-      # GERAR INDEX.JSON (AGORA NO LUGAR CERTO)
+      # GERAR INDEX.JSON (DEPOIS DOS ARQUIVOS ESTAREM EM DOCS)
       # ============================================================
       - name: Gerar index.json
         run: |
@@ -96,7 +97,7 @@ jobs:
           git push || true
 
       # ============================================================
-      # LOG FINAL (BONUS)
+      # LOG FINAL (URL DO DASHBOARD)
       # ============================================================
       - name: Mostrar URL
         run: echo "Dashboard: https://ivnavalenca.github.io/algolab/"
