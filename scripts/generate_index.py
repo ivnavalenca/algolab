@@ -1,18 +1,25 @@
 import os
 import json
 
-PASTA = "resultados/historico"
+# ============================================================
+# PASTA CORRETA (AGORA DENTRO DE docs)
+# ============================================================
+PASTA = "docs/resultados/historico"
 
+# lista apenas arquivos CSV
 arquivos = sorted([
     f for f in os.listdir(PASTA)
     if f.endswith(".csv")
 ])
 
-saida = "docs/resultados/historico/index.json"
+# caminho de saída
+saida = os.path.join(PASTA, "index.json")
 
-os.makedirs(os.path.dirname(saida), exist_ok=True)
+# garante que a pasta existe
+os.makedirs(PASTA, exist_ok=True)
 
+# escreve o JSON
 with open(saida, "w") as f:
     json.dump(arquivos, f, indent=2)
 
-print("index.json atualizado!")
+print("index.json atualizado em docs!")
