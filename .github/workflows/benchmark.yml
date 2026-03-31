@@ -1,26 +1,50 @@
+# ============================================================
+# WORKFLOW: Benchmark + Dashboard
+# ============================================================
+#
+# OBJETIVO:
+# - Executar os experimentos em Java
+# - Gerar arquivos CSV
+# - Manter histórico de execuções
+# - Atualizar dados do dashboard automaticamente
+# - Publicar no GitHub Pages (via /docs)
+#
+# ============================================================
+
 name: Benchmark + Dashboard
 
+# ============================================================
+# DISPARO DO WORKFLOW
+# ============================================================
+# Executa sempre que houver push na branch main
 on:
   push:
     branches: [ main ]
 
+# ============================================================
+# JOB PRINCIPAL
+# ============================================================
 jobs:
   run-benchmark:
+
+    # Máquina virtual usada pelo GitHub
     runs-on: ubuntu-latest
 
+    # Variáveis de ambiente
     env:
+      # Evita problema com Node 20 deprecated
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
 
       # ============================================================
-      # CHECKOUT DO REPOSITÓRIO
+      # 1. BAIXAR O REPOSITÓRIO
       # ============================================================
-      - name: Checkout
+      - name: Checkout do código
         uses: actions/checkout@v4
 
       # ============================================================
-      # CONFIGURAR JAVA
+      # 2. CONFIGURAR JAVA (necessário para rodar o projeto)
       # ============================================================
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -28,17 +52,19 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Permissão Gradle
+      # Permite executar o Gradle Wrapper
+      - name: Dar permissão ao Gradle
         run: chmod +x gradlew
 
       # ============================================================
-      # EXECUTAR EXPERIMENTOS
+      # 3. EXECUTAR EXPERIMENTOS
       # ============================================================
+      # Gera CSV + histórico automaticamente
       - name: Rodar experimentos
         run: ./gradlew run --no-daemon
 
       # ============================================================
-      # GARANTIR ESTRUTURA DE PASTAS
+      # 4. GARANTIR ESTRUTURA DE PASTAS
       # ============================================================
       - name: Criar pastas necessárias
         run: |
@@ -46,26 +72,27 @@ jobs:
           mkdir -p docs/resultados/historico
 
       # ============================================================
-      # COPIAR RESULTADOS PARA DOCS (ANTES DO INDEX)
+      # 5. COPIAR RESULTADOS PARA O DASHBOARD
       # ============================================================
+      # IMPORTANTE: precisa acontecer ANTES do index.json
       - name: Copiar resultados para docs
         run: |
           mkdir -p docs/resultados
           cp -r resultados/* docs/resultados/ || echo "Nada para copiar"
 
       # ============================================================
-      # CONFIGURAR PYTHON
+      # 6. CONFIGURAR PYTHON (para scripts auxiliares)
       # ============================================================
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
 
-      - name: Instalar dependências
+      - name: Instalar dependências Python
         run: pip install pandas matplotlib
 
       # ============================================================
-      # GERAR GRÁFICOS (OPCIONAL)
+      # 7. GERAR GRÁFICOS (OPCIONAL)
       # ============================================================
       - name: Gerar gráfico
         run: |
@@ -74,104 +101,36 @@ jobs:
           fi
 
       # ============================================================
-      # GERAR INDEX.JSON (DEPOIS DOS ARQUIVOS ESTAREM EM DOCS)
+      # 8. GERAR INDEX.JSON (ESSENCIAL PARA O DASHBOARD)
       # ============================================================
       - name: Gerar index.json
         run: |
           python scripts/generate_index.py || echo "Sem histórico ainda"
 
       # ============================================================
-      # COMMIT AUTOMÁTICO
+      # 9. COMMIT AUTOMÁTICO DOS RESULTADOS
       # ============================================================
       - name: Commit automático
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
 
+          # evita conflito de push
           git pull origin main --rebase || true
 
+          # adiciona apenas dados do dashboard
           git add docs/resultados/ || true
 
+          # commit só se houver mudanças
           git commit -m "chore: atualiza dados do dashboard automaticamente" || true
 
+          # envia para o repositório
           git push || true
 
       # ============================================================
-      # LOG FINAL (URL DO DASHBOARD)
+      # 10. LOG FINAL (LINK DO DASHBOARD)
       # ============================================================
-      - name: Mostrar URL
-        name: Benchmark + Dashboard
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  run-benchmark:
-    runs-on: ubuntu-latest
-
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
-    steps:
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - name: Permissão Gradle
-        run: chmod +x gradlew
-
-      - name: Rodar experimentos
-        run: ./gradlew run --no-daemon
-
-      - name: Criar pastas necessárias
-        run: |
-          mkdir -p resultados/historico
-          mkdir -p docs/resultados/historico
-
-      - name: Copiar resultados para docs
-        run: |
-          mkdir -p docs/resultados
-          cp -r resultados/* docs/resultados/ || echo "Nada para copiar"
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
-
-      - name: Instalar dependências
-        run: pip install pandas matplotlib
-
-      - name: Gerar gráfico
-        run: |
-          if [ -f docs/resultados/ordenacao.csv ]; then
-            python scripts/generate_chart.py
-          fi
-
-      - name: Gerar index.json
-        run: |
-          python scripts/generate_index.py || echo "Sem histórico ainda"
-
-      - name: Commit automático
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-
-          git pull origin main --rebase || true
-
-          git add docs/resultados/ || true
-
-          git commit -m "chore: atualiza dados do dashboard automaticamente" || true
-
-          git push || true
-
-      - name: Mostrar URL
+      - name: Mostrar URL do Dashboard
         run: |
           echo "Dashboard disponível em:"
           echo "https://ivnavalenca.github.io/algolab/"
