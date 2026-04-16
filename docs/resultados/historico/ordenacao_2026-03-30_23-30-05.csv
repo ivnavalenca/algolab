@@ -1,0 +1,16 @@
+tamanho,cenario,algoritmo,tempo
+100,ordenacao,BubbleSort,235710
+100,ordenacao,InsertionSort,77525
+100,ordenacao,SelectionSort,122709
+100,ordenacao,MergeSort,86101
+100,ordenacao,QuickSort,31729
+1000,ordenacao,BubbleSort,6921460
+1000,ordenacao,InsertionSort,2973348
+1000,ordenacao,SelectionSort,4732194
+1000,ordenacao,MergeSort,4705772
+1000,ordenacao,QuickSort,515915
+5000,ordenacao,BubbleSort,30131683
+5000,ordenacao,InsertionSort,13140774
+5000,ordenacao,SelectionSort,9043983
+5000,ordenacao,MergeSort,67134756
+5000,ordenacao,QuickSort,644575

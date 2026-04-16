@@ -1,0 +1,7 @@
+tamanho,cenario,algoritmo,tempo
+100,insercao,VetorDinamico,17473
+100,insercao,HashLinearProbing,16861
+1000,insercao,VetorDinamico,147025
+1000,insercao,HashLinearProbing,333363
+5000,insercao,VetorDinamico,435514
+5000,insercao,HashLinearProbing,341579
