@@ -1,136 +1,208 @@
 # ============================================================
-# WORKFLOW: Benchmark + Dashboard
+# 🚀 ALGOLAB PIPELINE COMPLETO
 # ============================================================
 #
 # OBJETIVO:
-# - Executar os experimentos em Java
-# - Gerar arquivos CSV
-# - Manter histórico de execuções
-# - Atualizar dados do dashboard automaticamente
-# - Publicar no GitHub Pages (via /docs)
+# - Build do projeto Java
+# - Execução de benchmarks
+# - Geração de métricas e gráficos
+# - Detecção de regressão
+# - Geração de badges dinâmicos
+# - Publicação do dashboard (GitHub Pages)
 #
 # ============================================================
 
-name: Benchmark + Dashboard
+name: Algolab Pipeline
 
 # ============================================================
-# DISPARO DO WORKFLOW
+# 🔄 DISPARO DO WORKFLOW
 # ============================================================
-# Executa sempre que houver push na branch main
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
 
 # ============================================================
-# JOB PRINCIPAL
+# 🧱 JOB 1: BUILD
 # ============================================================
 jobs:
-  run-benchmark:
 
-    # Máquina virtual usada pelo GitHub
+  build:
+    name: 🔧 Build do Projeto
     runs-on: ubuntu-latest
 
-    # Variáveis de ambiente
-    env:
-      # Evita problema com Node 20 deprecated
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
     steps:
-
-      # ============================================================
-      # 1. BAIXAR O REPOSITÓRIO
-      # ============================================================
-      - name: Checkout do código
+      # ------------------------------------------------------
+      # 📥 Checkout do código
+      # ------------------------------------------------------
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # ============================================================
-      # 2. CONFIGURAR JAVA (necessário para rodar o projeto)
-      # ============================================================
+      # ------------------------------------------------------
+      # ☕ Setup Java
+      # ------------------------------------------------------
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
 
-      # Permite executar o Gradle Wrapper
-      - name: Dar permissão ao Gradle
+      # ------------------------------------------------------
+      # 🔐 Permissão Gradle
+      # ------------------------------------------------------
+      - name: Permissão Gradle
         run: chmod +x gradlew
 
-      # ============================================================
-      # 3. EXECUTAR EXPERIMENTOS
-      # ============================================================
-      # Gera CSV + histórico automaticamente
-      - name: Rodar experimentos
-        run: ./gradlew run --no-daemon
+      # ------------------------------------------------------
+      # 🧱 Build
+      # ------------------------------------------------------
+      - name: Build
+        run: ./gradlew clean build
 
-      # ============================================================
-      # 4. GARANTIR ESTRUTURA DE PASTAS
-      # ============================================================
-      - name: Criar pastas necessárias
-        run: |
-          mkdir -p resultados/historico
-          mkdir -p docs/resultados/historico
+  # =========================================================
+  # 📊 JOB 2: BENCHMARK
+  # =========================================================
+  benchmark:
+    name: 📊 Execução de Benchmark
+    needs: build
+    runs-on: ubuntu-latest
 
-      # ============================================================
-      # 5. COPIAR RESULTADOS PARA O DASHBOARD
-      # ============================================================
-      # IMPORTANTE: precisa acontecer ANTES do index.json
-      - name: Copiar resultados para docs
-        run: |
-          mkdir -p docs/resultados
-          cp -r resultados/* docs/resultados/ || echo "Nada para copiar"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # ============================================================
-      # 6. CONFIGURAR PYTHON (para scripts auxiliares)
-      # ============================================================
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Permissão Gradle
+        run: chmod +x gradlew
+
+      # ------------------------------------------------------
+      # ▶️ Executa experimentos
+      # ------------------------------------------------------
+      - name: Rodar Benchmark
+        run: ./gradlew run
+
+      # ------------------------------------------------------
+      # 📦 Upload dos resultados
+      # ------------------------------------------------------
+      - name: Upload resultados
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados
+          path: resultados/
+
+  # =========================================================
+  # 🧠 JOB 3: ANALYTICS + BADGES + DASHBOARD
+  # =========================================================
+  analytics:
+    name: 🧠 Análise e Dashboard
+    needs: benchmark
+    runs-on: ubuntu-latest
+
+    steps:
+      # ------------------------------------------------------
+      # 📥 Checkout
+      # ------------------------------------------------------
+      - uses: actions/checkout@v4
+
+      # ------------------------------------------------------
+      # 📦 Download dos resultados
+      # ------------------------------------------------------
+      - name: Download resultados
+        uses: actions/download-artifact@v4
+        with:
+          name: resultados
+          path: resultados/
+
+      # ------------------------------------------------------
+      # 🐍 Setup Python
+      # ------------------------------------------------------
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
 
-      - name: Instalar dependências Python
-        run: pip install pandas matplotlib
+      - name: Instalar dependências
+        run: pip install matplotlib pandas reportlab
 
-      # ============================================================
-      # 7. GERAR GRÁFICOS (OPCIONAL)
-      # ============================================================
+      # ------------------------------------------------------
+      # 📁 Preparar estrutura do dashboard
+      # ------------------------------------------------------
+      - name: Criar estrutura
+        run: |
+          mkdir -p docs/resultados/historico
+          cp -r resultados/* docs/resultados/ || true
+
+      # ======================================================
+      # 📊 ANÁLISE
+      # ======================================================
+      - name: Gerar métricas
+        run: python scripts/generate_metrics.py
+
+      - name: Gerar ranking
+        run: python scripts/generate_ranking.py
+
+      - name: Gerar timeline
+        run: python scripts/generate_timeline.py
+
       - name: Gerar gráfico
-        run: |
-          if [ -f docs/resultados/ordenacao.csv ]; then
-            python scripts/generate_chart.py
-          fi
+        run: python scripts/generate_graph.py
 
-      # ============================================================
-      # 8. GERAR INDEX.JSON (ESSENCIAL PARA O DASHBOARD)
-      # ============================================================
-      - name: Gerar index.json
-        run: |
-          python scripts/generate_index.py || echo "Sem histórico ainda"
+      - name: Gerar boxplot
+        run: python scripts/generate_boxplot.py
 
-      # ============================================================
-      # 9. COMMIT AUTOMÁTICO DOS RESULTADOS
-      # ============================================================
-      - name: Commit automático
+      # ======================================================
+      # 🚨 REGRESSÃO (FALHA O CI)
+      # ======================================================
+      - name: Verificar regressão
+        run: python scripts/check_regression.py
+
+      # ======================================================
+      # 🏷️ BADGES
+      # ======================================================
+      - name: Badge regressão
+        run: python scripts/generate_badge.py
+
+      - name: Badge melhor algoritmo
+        run: python scripts/generate_best_badge.py
+
+      - name: Badge tendência
+        run: python scripts/generate_trend_badge.py
+
+      - name: Badge qualidade
+        run: python scripts/generate_quality_badge.py
+
+      - name: Badge score
+        run: python scripts/generate_project_score_badge.py
+
+      - name: Badge maturidade
+        run: python scripts/generate_maturity_badge.py
+
+      # ======================================================
+      # 📤 COMMIT DOS RESULTADOS
+      # ======================================================
+      - name: Commit resultados
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
 
-          # evita conflito de push
           git pull origin main --rebase || true
-
-          # adiciona apenas dados do dashboard
-          git add docs/resultados/ || true
-
-          # commit só se houver mudanças
-          git commit -m "chore: atualiza dados do dashboard automaticamente" || true
-
-          # envia para o repositório
+          git add docs/resultados/
+          git commit -m "chore: atualiza dashboard e badges" || true
           git push || true
 
-      # ============================================================
-      # 10. LOG FINAL (LINK DO DASHBOARD)
-      # ============================================================
-      - name: Mostrar URL do Dashboard
-        run: |
-          echo "Dashboard disponível em:"
-          echo "https://ivnavalenca.github.io/algolab/"
+      # ======================================================
+      # 🌐 DEPLOY GITHUB PAGES
+      # ======================================================
+      - name: Deploy Pages
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs

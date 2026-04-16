@@ -1,40 +1,221 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Algolab Dashboard</title>
+  <meta charset="UTF-8">
+  <title>Algolab Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial; background: #f5f5f5; margin: 20px; }
+    h1, h2 { text-align: center; }
 
-    <link rel="stylesheet" href="style.css">
+    .container { max-width: 1000px; margin: auto; }
+
+    .card {
+      background: white;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    select {
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+
+    .ranking-item {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 6px;
+      background: #eee;
+    }
+
+    .ok { border-left: 5px solid green; }
+    .regressao { border-left: 5px solid red; }
+    .instavel { border-left: 5px solid orange; }
+    .complexo { border-left: 5px solid purple; }
+
+    table { width: 100%; border-collapse: collapse; }
+    td, th { padding: 8px; border-bottom: 1px solid #ddd; text-align: center; }
+  </style>
 </head>
+
 <body>
 
-<h1>📊 Algolab Dashboard</h1>
+<div class="container">
 
-<!-- Seleção de tipo -->
-<select id="tipo">
+<h1>🚀 Algolab Dashboard</h1>
+
+<!-- ===================================================== -->
+<!-- 🎯 FILTRO -->
+<!-- ===================================================== -->
+<div class="card">
+  <h2>🎯 Selecionar Cenário</h2>
+
+  <select id="cenarioSelect">
     <option value="ordenacao">Ordenação</option>
     <option value="busca">Busca</option>
     <option value="estruturas">Estruturas</option>
-</select>
+    <option value="lista03">Lista03</option>
+  </select>
 
-<!-- Seleção de execuções -->
-<h3>📁 Histórico</h3>
-<select id="execucaoA"></select>
-<select id="execucaoB"></select>
+</div>
 
-<button onclick="comparar()">Comparar</button>
+<!-- ===================================================== -->
+<!-- 📊 GRÁFICOS -->
+<!-- ===================================================== -->
+<div class="card">
+  <h2>📊 Desempenho</h2>
+  <img id="grafico" width="100%">
+</div>
 
-<!-- Gráfico -->
-<canvas id="grafico"></canvas>
+<div class="card">
+  <h2>📊 Boxplot</h2>
+  <img id="boxplot" width="100%">
+</div>
 
-<!-- Ranking -->
-<h3>🏆 Ranking de Algoritmos</h3>
-<ul id="ranking"></ul>
+<!-- ===================================================== -->
+<!-- 📈 MÉTRICAS -->
+<!-- ===================================================== -->
+<div class="card">
+  <h2>📈 Complexidade</h2>
+  <table id="metrics"></table>
+</div>
 
-<script src="script.js"></script>
+<!-- ===================================================== -->
+<!-- 🏆 RANKING -->
+<!-- ===================================================== -->
+<div class="card">
+  <h2>🏆 Ranking</h2>
+  <div id="ranking"></div>
+</div>
+
+<!-- ===================================================== -->
+<!-- 📈 TIMELINE -->
+<!-- ===================================================== -->
+<div class="card">
+  <h2>📈 Timeline</h2>
+  <canvas id="timeline"></canvas>
+</div>
+
+</div>
+
+<script>
+
+let chart;
+
+// ============================================================
+// 🎯 TROCA DE CENÁRIO
+// ============================================================
+function trocarCenario() {
+
+  const cenario = document.getElementById("cenarioSelect").value;
+
+  document.getElementById("grafico").src = `resultados/graficos/${cenario}.png`;
+  document.getElementById("boxplot").src = `resultados/graficos/${cenario}_boxplot.png`;
+
+  carregarMetrics(cenario);
+  carregarRanking(cenario);
+  carregarTimeline(cenario);
+}
+
+// ============================================================
+// 📊 MÉTRICAS
+// ============================================================
+async function carregarMetrics(cenario) {
+
+  const res = await fetch(`resultados/${cenario}_metrics.json`);
+  const data = await res.json();
+
+  let html = "<tr><th>Algoritmo</th><th>k</th><th>R²</th></tr>";
+
+  Object.entries(data).forEach(([alg, info]) => {
+    html += `<tr>
+      <td>${alg}</td>
+      <td>${info.k}</td>
+      <td>${info.r2}</td>
+    </tr>`;
+  });
+
+  document.getElementById("metrics").innerHTML = html;
+}
+
+// ============================================================
+// 🏆 RANKING
+// ============================================================
+async function carregarRanking(cenario) {
+
+  const res = await fetch(`resultados/${cenario}_ranking.json`);
+  const data = await res.json();
+
+  const lista = Object.entries(data).map(([alg, info]) => ({
+    algoritmo: alg,
+    score: info.score,
+    status: info.status
+  }));
+
+  lista.sort((a, b) => b.score - a.score);
+
+  const container = document.getElementById("ranking");
+  container.innerHTML = "";
+
+  lista.forEach((item, i) => {
+
+    let classe = "ok";
+    if (item.status === "REGRESSAO") classe = "regressao";
+    if (item.status === "INSTAVEL") classe = "instavel";
+    if (item.status === "COMPLEXO") classe = "complexo";
+
+    container.innerHTML += `
+      <div class="ranking-item ${classe}">
+        ${i+1}º - ${item.algoritmo} | Score: ${item.score}
+      </div>
+    `;
+  });
+}
+
+// ============================================================
+// 📈 TIMELINE
+// ============================================================
+async function carregarTimeline(cenario) {
+
+  const res = await fetch(`resultados/${cenario}_timeline.json`);
+  const data = await res.json();
+
+  const datasets = [];
+
+  Object.entries(data).forEach(([alg, pontos]) => {
+    datasets.push({
+      label: alg,
+      data: pontos.map(p => ({ x: p.data, y: p.tempo })),
+      fill: false
+    });
+  });
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(document.getElementById("timeline"), {
+    type: "line",
+    data: { datasets },
+    options: {
+      parsing: false,
+      scales: {
+        x: { type: "category" }
+      }
+    }
+  });
+}
+
+// ============================================================
+// 🚀 INIT
+// ============================================================
+document.getElementById("cenarioSelect").addEventListener("change", trocarCenario);
+
+trocarCenario();
+
+</script>
 
 </body>
 </html>

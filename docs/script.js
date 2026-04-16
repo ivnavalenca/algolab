@@ -1,23 +1,14 @@
 /*
  * ============================================================
- * DASHBOARD ALGOLAB - SCRIPT FINAL
- * ============================================================
- *
- * OBJETIVO:
- * - Carregar histórico (index.json)
- * - Comparar execuções
- * - Gerar gráfico
- * - Calcular ranking automático
- *
+ * ALGOLAB DASHBOARD - SCRIPT COMPLETO FINAL
  * ============================================================
  */
 
-const ctx = document.getElementById('grafico').getContext('2d');
 let chart;
 
 /*
  * ============================================================
- * CARREGAR CSV
+ * CARREGAR CSV (MULTI-CENÁRIO)
  * ============================================================
  */
 async function carregarCSV(arquivo) {
@@ -33,13 +24,12 @@ async function carregarCSV(arquivo) {
 
         if (!l) return;
 
-        const [tamanho, , algoritmo, tempo] = l.split(",");
+        const [tamanho, cenario, algoritmo, tempo] = l.split(",");
 
-        if (!dados[algoritmo]) {
-            dados[algoritmo] = [];
-        }
+        if (!dados[cenario]) dados[cenario] = {};
+        if (!dados[cenario][algoritmo]) dados[cenario][algoritmo] = [];
 
-        dados[algoritmo].push({
+        dados[cenario][algoritmo].push({
             x: Number(tamanho),
             y: Number(tempo)
         });
@@ -50,7 +40,74 @@ async function carregarCSV(arquivo) {
 
 /*
  * ============================================================
- * CALCULAR RANKING
+ * POPULAR CENÁRIOS
+ * ============================================================
+ */
+function popularCenarios(dados) {
+
+    const select = document.getElementById("cenario");
+    select.innerHTML = "";
+
+    Object.keys(dados).forEach(c => {
+        select.add(new Option(c, c));
+    });
+}
+
+/*
+ * ============================================================
+ * REGRESSÃO LOG-LOG + R²
+ * ============================================================
+ */
+function regressao(dados) {
+
+    const xs = dados.map(p => Math.log(p.x));
+    const ys = dados.map(p => Math.log(p.y));
+
+    const n = xs.length;
+
+    let sx = 0, sy = 0, sxy = 0, sx2 = 0;
+
+    for (let i = 0; i < n; i++) {
+        sx += xs[i];
+        sy += ys[i];
+        sxy += xs[i] * ys[i];
+        sx2 += xs[i] * xs[i];
+    }
+
+    const k = (n * sxy - sx * sy) / (n * sx2 - sx * sx);
+    const logC = (sy - k * sx) / n;
+    const c = Math.exp(logC);
+
+    const mediaY = sy / n;
+
+    let ssTot = 0, ssRes = 0;
+
+    for (let i = 0; i < n; i++) {
+
+        const yPrev = logC + k * xs[i];
+
+        ssTot += Math.pow(ys[i] - mediaY, 2);
+        ssRes += Math.pow(ys[i] - yPrev, 2);
+    }
+
+    const r2 = 1 - (ssRes / ssTot);
+
+    return { k, c, r2 };
+}
+
+/*
+ * ============================================================
+ * PREVISÃO
+ * ============================================================
+ */
+function preverTempo(dados, n) {
+    const { k, c } = regressao(dados);
+    return c * Math.pow(n, k);
+}
+
+/*
+ * ============================================================
+ * RANKING
  * ============================================================
  */
 function calcularRanking(dados) {
@@ -59,49 +116,107 @@ function calcularRanking(dados) {
 
     Object.keys(dados).forEach(alg => {
 
-        const valores = dados[alg].map(p => p.y);
-        const media = valores.reduce((a, b) => a + b, 0) / valores.length;
+        const t = preverTempo(dados[alg], 100000);
 
-        ranking.push({ algoritmo: alg, media });
+        ranking.push({ algoritmo: alg, tempo: t });
     });
 
-    ranking.sort((a, b) => a.media - b.media);
+    ranking.sort((a, b) => a.tempo - b.tempo);
 
     return ranking;
 }
 
 /*
  * ============================================================
- * RENDERIZAR RANKING
+ * ALERTAS DE REGRESSÃO
  * ============================================================
  */
-function renderRanking(ranking) {
+function detectarRegressao(a, b) {
+
+    const alertas = [];
+
+    Object.keys(b).forEach(alg => {
+
+        if (!a[alg]) return;
+
+        const tA = preverTempo(a[alg], 100000);
+        const tB = preverTempo(b[alg], 100000);
+
+        const diff = (tB - tA) / tA;
+
+        if (diff > 0.15) {
+            alertas.push({ algoritmo: alg, diff });
+        }
+    });
+
+    return alertas;
+}
+
+/*
+ * ============================================================
+ * RENDER
+ * ============================================================
+ */
+function renderRanking(dados) {
 
     const ul = document.getElementById("ranking");
     ul.innerHTML = "";
 
-    ranking.forEach((r, i) => {
+    calcularRanking(dados).forEach((r, i) => {
 
         const li = document.createElement("li");
-
-        li.textContent = `${i + 1}º - ${r.algoritmo} (${r.media.toFixed(2)})`;
-
-        if (i === 0) {
-            li.style.color = "green";
-            li.style.fontWeight = "bold";
-        }
-
-        if (i === ranking.length - 1) {
-            li.style.color = "red";
-        }
+        li.textContent = `${i+1}º ${r.algoritmo}`;
 
         ul.appendChild(li);
     });
 }
 
+function renderAlertas(a, b) {
+
+    const div = document.getElementById("alertas");
+    div.innerHTML = "";
+
+    const alertas = detectarRegressao(a, b);
+
+    if (!alertas.length) {
+        div.innerHTML = "✅ Sem regressões";
+        return;
+    }
+
+    alertas.forEach(a => {
+        div.innerHTML += `❌ ${a.algoritmo} piorou<br>`;
+    });
+}
+
+function renderModelo(dados) {
+
+    const div = document.getElementById("complexidade");
+    div.innerHTML = "";
+
+    Object.keys(dados).forEach(alg => {
+
+        const { k, r2 } = regressao(dados[alg]);
+
+        div.innerHTML += `${alg}: n^${k.toFixed(2)} (R²=${r2.toFixed(2)})<br>`;
+    });
+}
+
+function renderPrevisao(dados) {
+
+    const div = document.getElementById("previsao");
+    div.innerHTML = "";
+
+    Object.keys(dados).forEach(alg => {
+
+        const t = preverTempo(dados[alg], 100000);
+
+        div.innerHTML += `${alg}: ${Math.round(t)}<br>`;
+    });
+}
+
 /*
  * ============================================================
- * COMPARAR EXECUÇÕES
+ * COMPARAÇÃO PRINCIPAL
  * ============================================================
  */
 async function comparar() {
@@ -109,56 +224,64 @@ async function comparar() {
     const a = document.getElementById("execucaoA").value;
     const b = document.getElementById("execucaoB").value;
 
-    const dadosA = await carregarCSV(a);
-    const dadosB = await carregarCSV(b);
+    const dadosA_all = await carregarCSV(a);
+    const dadosB_all = await carregarCSV(b);
+
+    popularCenarios(dadosB_all);
+
+    const cenario = document.getElementById("cenario").value ||
+                    Object.keys(dadosB_all)[0];
+
+    const dadosA = dadosA_all[cenario];
+    const dadosB = dadosB_all[cenario];
 
     const datasets = [];
 
-    /*
-     * Execução A (linha contínua)
-     */
-    Object.keys(dadosA).forEach(alg => {
-
-        datasets.push({
-            label: `${alg} (A)`,
-            data: dadosA[alg],
-            borderWidth: 2
-        });
-    });
-
-    /*
-     * Execução B (linha tracejada)
-     */
     Object.keys(dadosB).forEach(alg => {
 
+        // dados reais
         datasets.push({
-            label: `${alg} (B)`,
+            label: `${alg}`,
             data: dadosB[alg],
-            borderDash: [5, 5],
             borderWidth: 2
+        });
+
+        // curva ajustada
+        const { k, c } = regressao(dadosB[alg]);
+
+        const curva = dadosB[alg].map(p => ({
+            x: p.x,
+            y: c * Math.pow(p.x, k)
+        }));
+
+        datasets.push({
+            label: `${alg} (fit)`,
+            data: curva,
+            borderDash: [5, 5]
         });
     });
 
     if (chart) chart.destroy();
 
+    const ctx = document.getElementById("grafico").getContext("2d");
+
     chart = new Chart(ctx, {
-        type: 'line',
+        type: "line",
         data: { datasets }
     });
 
-    /*
-     * Ranking baseado na execução mais recente (B)
-     */
-    const ranking = calcularRanking(dadosB);
-    renderRanking(ranking);
+    renderRanking(dadosB);
+    renderAlertas(dadosA, dadosB);
+    renderModelo(dadosB);
+    renderPrevisao(dadosB);
 }
 
 /*
  * ============================================================
- * CARREGAR LISTA DE EXECUÇÕES (index.json)
+ * INICIALIZAÇÃO
  * ============================================================
  */
-async function carregarLista() {
+async function iniciar() {
 
     const res = await fetch("resultados/historico/index.json");
     const arquivos = await res.json();
@@ -167,23 +290,14 @@ async function carregarLista() {
     const selB = document.getElementById("execucaoB");
 
     arquivos.forEach(a => {
-        selA.add(new Option(a, a));
-        selB.add(new Option(a, a));
+        selA.add(new Option(a.arquivo, a.arquivo));
+        selB.add(new Option(a.arquivo, a.arquivo));
     });
 
-    /*
-     * Seleciona automaticamente as duas últimas execuções
-     */
-    if (arquivos.length >= 2) {
-        selA.value = arquivos[arquivos.length - 2];
-        selB.value = arquivos[arquivos.length - 1];
-        comparar();
-    }
+    selA.value = arquivos[0].arquivo;
+    selB.value = arquivos[arquivos.length - 1].arquivo;
+
+    comparar();
 }
 
-/*
- * ============================================================
- * INICIALIZAÇÃO
- * ============================================================
- */
-carregarLista();
+iniciar();

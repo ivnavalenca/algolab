@@ -19,6 +19,7 @@ package br.upe.analisealgoritmos;
 import br.upe.analisealgoritmos.experimentos.ExperimentoBuscaGrafico;
 import br.upe.analisealgoritmos.experimentos.ExperimentoEstruturasGrafico;
 import br.upe.analisealgoritmos.experimentos.ExperimentoOrdenacaoGrafico;
+import br.upe.analisealgoritmos.experimentos.ExperimentoLista03;
 import br.upe.analisealgoritmos.utils.GeradorGrafico;
 
 public class Principal {
@@ -42,6 +43,7 @@ public class Principal {
             ExperimentoOrdenacaoGrafico.executar();
             ExperimentoBuscaGrafico.executar();
             ExperimentoEstruturasGrafico.executar();
+            ExperimentoLista03.executar();
 
             /*
              * ============================================================

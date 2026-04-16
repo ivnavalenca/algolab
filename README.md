@@ -1,57 +1,66 @@
 # 🚀 Algolab
 
-Framework para análise de desempenho de algoritmos com geração automática de métricas, arquivos CSV e gráficos.
+Laboratório avançado para análise de desempenho de algoritmos com benchmarking automatizado, modelagem matemática e visualização interativa.
 
 ---
 
-## 📊 Visão Geral
+## 📊 Status
 
-O **Algolab** é uma plataforma experimental para avaliar o desempenho de algoritmos de forma prática, permitindo:
-
-* execução de benchmarks
-* coleta de métricas de tempo
-* geração automática de gráficos
-* comparação entre algoritmos
+![Score](https://img.shields.io/endpoint?url=https://ivnavalenca.github.io/algolab/resultados/badge_score.json)
+![Maturidade](https://img.shields.io/endpoint?url=https://ivnavalenca.github.io/algolab/resultados/badge_maturity.json)
+![Regressão](https://img.shields.io/endpoint?url=https://ivnavalenca.github.io/algolab/resultados/badge_regressao.json)
+![Best](https://img.shields.io/endpoint?url=https://ivnavalenca.github.io/algolab/resultados/badge_best.json)
+![Trend](https://img.shields.io/endpoint?url=https://ivnavalenca.github.io/algolab/resultados/badge_trend.json)
+![Qualidade](https://img.shields.io/endpoint?url=https://ivnavalenca.github.io/algolab/resultados/badge_quality.json)
 
 ---
 
-## 🏷️ Status
+## 🌐 Dashboard
 
-![Java](https://img.shields.io/badge/Java-21-blue)
-![Build](https://img.shields.io/badge/build-passing-brightgreen)
-![Status](https://img.shields.io/badge/status-active-success)
+Acesse o dashboard interativo:
+
+👉 https://ivnavalenca.github.io/algolab/
 
 ---
 
 ## ✨ Funcionalidades
 
 * 🔁 Execução automatizada de benchmarks
-* 📁 Geração de resultados em CSV
-* 📊 Geração automática de gráficos (.png)
-* ⚙️ Arquitetura modular (busca, ordenação, estruturas)
-* 📈 Comparação entre algoritmos
-* 🧪 Execução reprodutível
+* 📊 Geração de gráficos científicos (log-log, regressão, erro)
+* 🧠 Estimativa de complexidade (k) e qualidade (R²)
+* 🏆 Ranking inteligente de algoritmos
+* ⚠ Detecção automática de regressão
+* 📈 Análise de tendência ao longo do tempo
+* 📦 Geração automática de relatórios (PDF)
+* 🌐 Dashboard web interativo
+* 🤖 Integração completa com CI/CD
 
 ---
 
-## 📊 Exemplo de Resultado
+## 🧠 Inteligência do Sistema
 
-Após execução, o projeto gera:
+O Algolab aplica técnicas avançadas de análise:
+
+* **Regressão log-log** → estimativa da complexidade computacional
+* **Coeficiente R²** → validação do modelo matemático
+* **Estatística robusta** → mediana, desvio padrão, outliers
+* **Score multi-critério** → avaliação global dos algoritmos
+* **Detecção de regressão** → identificação automática de piora de desempenho
+
+---
+
+## 📊 Exemplo de Saída
 
 ```text
 resultados/
 ├── ordenacao.csv
 ├── busca.csv
 ├── estruturas.csv
-└── graficos/
-    ├── ordenacao.png
-    ├── busca.png
-    └── estruturas.png
+├── lista03.csv
+├── graficos/
+├── historico/
+└── badges/
 ```
-
-### 📈 Gráfico de desempenho
-
-![Desempenho](resultados/graficos/ordenacao.png)
 
 ---
 
@@ -61,10 +70,11 @@ resultados/
 
 * Java 21
 * Gradle
+* Python 3
 
 ---
 
-### ▶️ Rodar o projeto
+### ▶️ Executar benchmark
 
 ```bash
 ./gradlew run
@@ -72,65 +82,54 @@ resultados/
 
 ---
 
+## ⚙️ CI/CD
+
+O projeto utiliza GitHub Actions para:
+
+* Executar benchmarks automaticamente
+* Gerar métricas e gráficos
+* Detectar regressões
+* Atualizar dashboard
+* Gerar badges dinâmicos
+* Publicar resultados no GitHub Pages
+
+---
+
 ## 📂 Estrutura do Projeto
 
 ```text
-src/main/java/br/upe/analisealgoritmos
-├── busca/          # algoritmos de busca
-├── ordenacao/      # algoritmos de ordenação
-├── estruturas/     # estruturas de dados
-├── utils/          # utilitários (CSV, gráficos)
-└── experimentos/   # execução dos testes
+src/                # algoritmos e experimentos
+scripts/            # análise de dados e geração de métricas
+docs/               # dashboard e resultados
+.github/            # pipelines CI/CD
 ```
 
 ---
 
-## 🧠 Conceitos Aplicados
+## 📈 Diferenciais
 
-* Análise de algoritmos
-* Complexidade computacional (Big-O)
-* Benchmarking
-* Estruturas de dados
-* Programação orientada a objetos
-* Separação de responsabilidades
-
----
-
-## 📌 Exemplos de Algoritmos
-
-### 🔹 Ordenação
-
-* Bubble Sort
-* Insertion Sort
-* Selection Sort
-* Merge Sort
-* Quick Sort
-
-### 🔹 Busca
-
-* Busca Linear
-* Busca Binária
-
-### 🔹 Estruturas
-
-* Vetor Dinâmico
-* Tabela Hash (Linear Probing)
+* 🔬 Abordagem científica na análise de algoritmos
+* 📊 Visualização avançada e interativa
+* 🤖 Automação completa do pipeline
+* 🧠 Inteligência na tomada de decisão
+* 📦 Projeto pronto para portfólio, pesquisa ou TCC
 
 ---
 
-## 🔮 Próximos Passos
+## 🏆 Resultados
 
-* 🌐 Dashboard web interativo
-* 📊 Comparação histórica de execuções
-* 🤖 Integração com CI/CD
-* 📉 Análise estatística avançada
-* 📦 Exportação de relatórios em PDF
+O sistema permite:
+
+* Comparar algoritmos em diferentes cenários
+* Avaliar complexidade real vs teórica
+* Identificar regressões automaticamente
+* Monitorar evolução ao longo do tempo
 
 ---
 
 ## 👩‍💻 Autoria
 
-Projeto desenvolvido para estudo de análise de algoritmos e experimentação prática.
+Projeto desenvolvido para estudo avançado de análise de algoritmos e experimentação prática.
 
 ---
 
