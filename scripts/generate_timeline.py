@@ -19,7 +19,7 @@ import csv
 # 📁 CONFIGURAÇÕES
 # ============================================================
 PASTA = "resultados/historico"
-SAIDA = "docs/resultados/timeline.json"
+SAIDA = "docs/resultados/ordenacao_timeline.json"
 
 # ============================================================
 # 📂 LISTAR CSVs

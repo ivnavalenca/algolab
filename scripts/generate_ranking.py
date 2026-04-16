@@ -22,7 +22,7 @@ from utils import listar_csvs, carregar_dados, regressao_log_log
 # 📁 CONFIGURAÇÕES
 # ============================================================
 PASTA = "resultados/historico"
-SAIDA = "docs/resultados/ranking.json"
+SAIDA = "docs/resultados/ordenacao_ranking.json"
 
 # ============================================================
 # 📊 CÁLCULO DE SCORE

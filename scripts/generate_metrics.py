@@ -20,7 +20,7 @@ from utils import listar_csvs, carregar_dados, regressao_log_log
 # 📁 CONFIGURAÇÕES
 # ============================================================
 PASTA = "resultados/historico"
-SAIDA = "docs/resultados/metrics.json"
+SAIDA = "docs/resultados/ordenacao_metrics.json"
 
 # ============================================================
 # 📊 GERAÇÃO DE MÉTRICAS
