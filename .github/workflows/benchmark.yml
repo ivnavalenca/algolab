@@ -131,8 +131,11 @@ jobs:
         with:
           python-version: "3.x"
 
+      - name: Atualizar pip
+        run: python3 -m pip install --upgrade pip
+
       - name: Instalar dependências
-        run: pip install matplotlib pandas reportlab
+        run: pip install -r requirements.txt
 
       # ------------------------------------------------------
       # 📁 Preparar estrutura do dashboard
