@@ -1,0 +1,32 @@
+{
+  "BubbleSort": {
+    "score": 0.486,
+    "k": 1.22,
+    "r2": 0.98,
+    "status": "OK"
+  },
+  "InsertionSort": {
+    "score": 0.487,
+    "k": 1.13,
+    "r2": 0.97,
+    "status": "OK"
+  },
+  "SelectionSort": {
+    "score": 0.483,
+    "k": 1.05,
+    "r2": 0.93,
+    "status": "OK"
+  },
+  "MergeSort": {
+    "score": 0.488,
+    "k": 1.27,
+    "r2": 1.0,
+    "status": "OK"
+  },
+  "QuickSort": {
+    "score": 0.489,
+    "k": 0.6,
+    "r2": 0.82,
+    "status": "INSTAVEL"
+  }
+}
