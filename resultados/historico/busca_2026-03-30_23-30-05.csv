@@ -1,0 +1,7 @@
+tamanho,cenario,algoritmo,tempo
+100,busca,BuscaLinear,4198
+100,busca,BuscaBinaria,1883
+1000,busca,BuscaLinear,11021
+1000,busca,BuscaBinaria,1603
+5000,busca,BuscaLinear,67065
+5000,busca,BuscaBinaria,2265

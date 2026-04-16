@@ -1,0 +1,80 @@
+{
+  "BuscaLinear": [
+    {
+      "data": "22-17-04",
+      "tempo": 30021.333333333332
+    }
+  ],
+  "BuscaBinaria": [
+    {
+      "data": "22-17-04",
+      "tempo": 2013.0
+    }
+  ],
+  "VetorDinamico": [
+    {
+      "data": "22-17-04",
+      "tempo": 179208.0
+    }
+  ],
+  "HashLinearProbing": [
+    {
+      "data": "22-17-04",
+      "tempo": 215688.66666666666
+    }
+  ],
+  "Q1_Melhor": [
+    {
+      "data": "22-17-04",
+      "tempo": 218597.75
+    }
+  ],
+  "Q1_Pior": [
+    {
+      "data": "22-17-04",
+      "tempo": 617332.25
+    }
+  ],
+  "Q3_Quadratico": [
+    {
+      "data": "22-17-04",
+      "tempo": 321085.5
+    }
+  ],
+  "Q4_Intersecao": [
+    {
+      "data": "22-17-04",
+      "tempo": 28345.0
+    }
+  ],
+  "BubbleSort": [
+    {
+      "data": "22-17-04",
+      "tempo": 10129944.333333334
+    }
+  ],
+  "InsertionSort": [
+    {
+      "data": "22-17-04",
+      "tempo": 5948337.0
+    }
+  ],
+  "SelectionSort": [
+    {
+      "data": "22-17-04",
+      "tempo": 7625531.0
+    }
+  ],
+  "MergeSort": [
+    {
+      "data": "22-17-04",
+      "tempo": 4634660.0
+    }
+  ],
+  "QuickSort": [
+    {
+      "data": "22-17-04",
+      "tempo": 394296.0
+    }
+  ]
+}

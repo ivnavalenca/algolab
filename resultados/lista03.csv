@@ -1,0 +1,17 @@
+tamanho,cenario,algoritmo,tempo
+100,lista03,Q1_Melhor,3732
+100,lista03,Q1_Pior,147365
+100,lista03,Q3_Quadratico,42852
+100,lista03,Q4_Intersecao,7508
+500,lista03,Q1_Melhor,76211
+500,lista03,Q1_Pior,144738
+500,lista03,Q3_Quadratico,117644
+500,lista03,Q4_Intersecao,27573
+1000,lista03,Q1_Melhor,169029
+1000,lista03,Q1_Pior,423416
+1000,lista03,Q3_Quadratico,245505
+1000,lista03,Q4_Intersecao,52115
+2000,lista03,Q1_Melhor,625419
+2000,lista03,Q1_Pior,1753810
+2000,lista03,Q3_Quadratico,878341
+2000,lista03,Q4_Intersecao,26184
