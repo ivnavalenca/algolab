@@ -19,7 +19,7 @@ from utils import listar_csvs, carregar_dados
 # 📁 CONFIGURAÇÕES
 # ============================================================
 PASTA = "resultados/historico"
-SAIDA = "docs/boxplot.png"
+SAIDA = "docs/resultados/boxplot.png"
 
 # ============================================================
 # 📊 GERAÇÃO DO BOXPLOT
