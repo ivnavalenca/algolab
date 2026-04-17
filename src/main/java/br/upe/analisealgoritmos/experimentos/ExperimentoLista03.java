@@ -1,110 +1,120 @@
 package br.upe.analisealgoritmos.experimentos;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import br.upe.analisealgoritmos.listas.lista03.Q1_BuscaMatriz;
-import br.upe.analisealgoritmos.listas.lista03.Q3_f2_Quadratico;
-import br.upe.analisealgoritmos.listas.lista03.Q4_Intersecao;
-import br.upe.analisealgoritmos.utils.CSVExporter;
-
 /*
  * ============================================================
- * EXPERIMENTO — LISTA 03
+ * CLASSE: ExperimentoLista03
  * ============================================================
  *
  * OBJETIVO:
- * - Executar algoritmos da lista 03
- * - Medir desempenho com BenchmarkRunner
- * - Gerar CSV
- * - Salvar histórico automaticamente
+ * Executar experimentos adicionais (Lista 03) envolvendo
+ * algoritmos e registrar tempos de execução.
+ *
+ * OBS:
+ * Este experimento pode variar conforme a atividade,
+ * mas segue o padrão de exportação da pipeline Algolab.
+ *
+ * SAÍDA:
+ * ✔ resultados/latest.csv
+ * ✔ resultados/historico/run_<timestamp>.csv
+ *
+ * INTEGRAÇÃO:
+ * ✔ CSVExporter.salvarPipeline()
  *
  * ============================================================
  */
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import br.upe.analisealgoritmos.utils.CSVExporter;
+
 public class ExperimentoLista03 {
 
-    public static void executar() {
+    /*
+     * ============================================================
+     * TAMANHOS DE ENTRADA
+     * ============================================================
+     */
+    private static final int[] TAMANHOS = {100, 500, 1000, 2000, 5000};
 
-        System.out.println("🚀 Executando Lista 03...");
+    private static final Random random = new Random();
 
-        int[] tamanhos = {100, 500, 1000, 2000};
+    /*
+     * ============================================================
+     * EXECUÇÃO PRINCIPAL
+     * ============================================================
+     */
+    public static void main(String[] args) {
+
+        System.out.println("📘 Executando Experimento Lista 03...");
 
         List<String[]> resultados = new ArrayList<>();
 
-        // 🔥 Benchmark profissional
-        BenchmarkRunner runner = new BenchmarkRunner(20);
+        for (int n : TAMANHOS) {
 
-        for (int n : tamanhos) {
-
-            /*
-             * ========================================================
-             * Q1 — Melhor caso (Θ(1))
-             * ========================================================
-             */
-            long t1 = runner.medirTempo(() ->
-                    Q1_BuscaMatriz.executarMelhorCaso(n)
-            );
-
-            resultados.add(new String[]{
-                    String.valueOf(n), "lista03", "Q1_Melhor", String.valueOf(t1)
-            });
+            int[] dados = gerarDados(n);
 
             /*
              * ========================================================
-             * Q1 — Pior caso (Θ(N²))
+             * EXEMPLO: BUSCA LINEAR (PODE ADAPTAR CONFORME SUA LISTA)
              * ========================================================
              */
-            long t2 = runner.medirTempo(() ->
-                    Q1_BuscaMatriz.executarPiorCaso(n)
-            );
+            int alvo = dados[n / 2];
+
+            long inicio = System.nanoTime();
+            buscaLinear(dados, alvo);
+            long tempo = System.nanoTime() - inicio;
 
             resultados.add(new String[]{
-                    String.valueOf(n), "lista03", "Q1_Pior", String.valueOf(t2)
+                    String.valueOf(n),
+                    "lista03",
+                    "Linear",
+                    String.valueOf(tempo)
             });
 
             /*
-             * ========================================================
-             * Q3 — Quadrático (Θ(N²))
-             * ========================================================
+             * 👉 Você pode adicionar mais algoritmos aqui
              */
-            long t3 = runner.medirTempo(() ->
-                    Q3_f2_Quadratico.executar(n)
-            );
-
-            resultados.add(new String[]{
-                    String.valueOf(n), "lista03", "Q3_Quadratico", String.valueOf(t3)
-            });
-
-            /*
-             * ========================================================
-             * Q4 — Linear otimizado (Θ(N))
-             * ========================================================
-             */
-            long t4 = runner.medirTempo(() ->
-                    Q4_Intersecao.executar(n)
-            );
-
-            resultados.add(new String[]{
-                    String.valueOf(n), "lista03", "Q4_Intersecao", String.valueOf(t4)
-            });
         }
 
         /*
          * ============================================================
-         * EXPORTAÇÃO
+         * 🔥 EXPORTAÇÃO PADRÃO (PIPELINE)
          * ============================================================
          */
-        CSVExporter.salvar("resultados/lista03.csv", resultados);
+        CSVExporter.salvarPipeline(resultados);
 
-        CSVExporter.salvarComHistorico(
-                "resultados",
-                "lista03",
-                resultados
-        );
+        System.out.println("✅ Experimento Lista 03 concluído!");
+    }
 
-        System.out.println("📁 CSV salvo em: resultados/lista03.csv");
-        System.out.println("📁 Histórico atualizado!");
-        System.out.println("✅ Lista 03 finalizada!");
+    /*
+     * ============================================================
+     * BUSCA LINEAR
+     * ============================================================
+     */
+    private static int buscaLinear(int[] array, int alvo) {
+
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == alvo) return i;
+        }
+
+        return -1;
+    }
+
+    /*
+     * ============================================================
+     * GERAR DADOS ALEATÓRIOS
+     * ============================================================
+     */
+    private static int[] gerarDados(int n) {
+
+        int[] dados = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            dados[i] = random.nextInt(n);
+        }
+
+        return dados;
     }
 }
