@@ -1,12 +1,16 @@
 # ============================================================
-# 📊 GERAÇÃO DE BOXPLOT (DISTRIBUIÇÃO DOS DADOS)
+# 📊 BOXPLOT MULTI-CENÁRIO (PADRÃO ALGOLAB)
 # ============================================================
 #
 # RESPONSABILIDADES:
-# - Ler dados do CSV mais recente
+# - Ler histórico de execuções (CSV)
 # - Agrupar tempos por algoritmo
-# - Gerar boxplot com distribuição
-# - Exibir outliers reais
+# - Gerar boxplot por cenário
+# - Exibir distribuição + outliers
+# - Exportar gráficos para o dashboard
+#
+# SAÍDA:
+# docs/resultados/graficos/boxplot_<cenario>.png
 #
 # ============================================================
 
@@ -19,73 +23,103 @@ from utils import listar_csvs, carregar_dados
 # 📁 CONFIGURAÇÕES
 # ============================================================
 PASTA = "resultados/historico"
-SAIDA = "docs/resultados/graficos/boxplot.png"
+PASTA_SAIDA = "docs/resultados/graficos"
 
 # ============================================================
-# 📊 GERAÇÃO DO BOXPLOT
+# 📊 GERAÇÃO DOS BOXPLOTS
 # ============================================================
-def gerar_boxplot():
+def gerar_boxplots():
     """
-    Gera um boxplot para visualizar a distribuição dos tempos
-    de execução de cada algoritmo.
+    Gera boxplots para cada cenário encontrado no histórico.
     """
 
+    # --------------------------------------------------------
+    # GARANTE DIRETÓRIO DE SAÍDA
+    # --------------------------------------------------------
+    os.makedirs(PASTA_SAIDA, exist_ok=True)
+
+    # --------------------------------------------------------
+    # LISTA CSVs
+    # --------------------------------------------------------
     arquivos = listar_csvs(PASTA)
 
     if not arquivos:
         print("Nenhum CSV encontrado.")
         return
 
-    # usa o arquivo mais recente
-    arquivo = arquivos[-1]
-
-    dados = carregar_dados(os.path.join(PASTA, arquivo))
-
-    labels = []
-    valores = []
-
     # ========================================================
-    # ORGANIZA DADOS
+    # LOOP POR ARQUIVO (CENÁRIO)
     # ========================================================
-    for algoritmo in dados:
+    for arquivo in arquivos:
 
-        pontos = dados[algoritmo]
+        caminho = os.path.join(PASTA, arquivo)
 
-        tempos = [tempo for _, tempo, _ in pontos]
+        # ----------------------------------------------------
+        # CARREGA DADOS
+        # ----------------------------------------------------
+        dados = carregar_dados(caminho)
 
-        labels.append(algoritmo)
-        valores.append(tempos)
+        labels = []
+        valores = []
 
-    # ========================================================
-    # CRIA GRÁFICO
-    # ========================================================
-    plt.figure()
+        # ----------------------------------------------------
+        # ORGANIZA POR ALGORITMO
+        # ----------------------------------------------------
+        for algoritmo in dados:
 
-    plt.boxplot(
-        valores,
-        labels=labels,
-        showfliers=True  # mostra outliers
-    )
+            pontos = dados[algoritmo]
 
-    plt.title("Distribuição dos Tempos de Execução")
-    plt.ylabel("Tempo (mediana)")
+            # estrutura esperada: (tamanho, tempo, cenario)
+            tempos = [tempo for _, tempo, _ in pontos]
 
-    plt.xticks(rotation=30)
+            if not tempos:
+                continue
 
-    plt.grid(True)
+            labels.append(algoritmo)
+            valores.append(tempos)
 
-    # ========================================================
-    # SALVAR
-    # ========================================================
-    os.makedirs("docs", exist_ok=True)
+        if not valores:
+            print(f"Sem dados válidos em {arquivo}")
+            continue
 
-    plt.savefig(SAIDA, dpi=120)
+        # ----------------------------------------------------
+        # IDENTIFICA CENÁRIO
+        # ----------------------------------------------------
+        try:
+            cenario = list(dados.values())[0][0][2]
+        except Exception:
+            cenario = arquivo.replace(".csv", "")
 
-    print("Boxplot gerado em:", SAIDA)
+        # ----------------------------------------------------
+        # CRIA BOXPLOT
+        # ----------------------------------------------------
+        plt.figure(figsize=(8, 5))
 
+        plt.boxplot(
+            valores,
+            labels=labels,
+            showfliers=True  # exibe outliers
+        )
+
+        plt.title(f"Distribuição dos Tempos - {cenario}")
+        plt.xlabel("Algoritmo")
+        plt.ylabel("Tempo")
+
+        plt.xticks(rotation=30)
+        plt.grid(True)
+
+        # ----------------------------------------------------
+        # SALVA ARQUIVO
+        # ----------------------------------------------------
+        caminho_saida = f"{PASTA_SAIDA}/boxplot_{cenario}.png"
+
+        plt.savefig(caminho_saida, dpi=120)
+        plt.close()
+
+        print(f"Boxplot gerado: {caminho_saida}")
 
 # ============================================================
 # 🚀 EXECUÇÃO
 # ============================================================
 if __name__ == "__main__":
-    gerar_boxplot()
+    gerar_boxplots()

@@ -1,6 +1,16 @@
 /*
  * ============================================================
- * ALGOLAB DASHBOARD - SCRIPT COMPLETO FINAL
+ * 🚀 ALGOLAB DASHBOARD - SCRIPT COMPLETO
+ * ============================================================
+ *
+ * RESPONSABILIDADES:
+ * - Controle de cenário
+ * - Carregamento de dados (JSON)
+ * - Renderização (métricas, ranking, timeline)
+ * - Destaques visuais (melhor algoritmo)
+ * - Animações
+ * - Badges
+ *
  * ============================================================
  */
 
@@ -8,296 +18,193 @@ let chart;
 
 /*
  * ============================================================
- * CARREGAR CSV (MULTI-CENÁRIO)
+ * ✨ ANIMAÇÃO
  * ============================================================
  */
-async function carregarCSV(arquivo) {
+function animarElemento(id) {
 
-    const res = await fetch(`resultados/historico/${arquivo}`);
-    const texto = await res.text();
+    const el = document.getElementById(id);
 
-    const linhas = texto.split("\n").slice(1);
+    if (!el) return;
 
-    const dados = {};
+    el.classList.remove("show");
+    el.classList.add("fade");
 
-    linhas.forEach(l => {
-
-        if (!l) return;
-
-        const [tamanho, cenario, algoritmo, tempo] = l.split(",");
-
-        if (!dados[cenario]) dados[cenario] = {};
-        if (!dados[cenario][algoritmo]) dados[cenario][algoritmo] = [];
-
-        dados[cenario][algoritmo].push({
-            x: Number(tamanho),
-            y: Number(tempo)
-        });
-    });
-
-    return dados;
+    setTimeout(() => {
+        el.classList.add("show");
+    }, 50);
 }
 
 /*
  * ============================================================
- * POPULAR CENÁRIOS
+ * 🎯 TROCA DE CENÁRIO
  * ============================================================
  */
-function popularCenarios(dados) {
+function trocarCenario() {
 
-    const select = document.getElementById("cenario");
-    select.innerHTML = "";
+    const cenario = document.getElementById("cenarioSelect").value;
 
-    Object.keys(dados).forEach(c => {
-        select.add(new Option(c, c));
-    });
+    // gráficos
+    document.getElementById("grafico").src =
+        `resultados/graficos/${cenario}.png`;
+
+    document.getElementById("boxplot").src =
+        `resultados/graficos/boxplot_${cenario}.png`;
+
+    // animação
+    animarElemento("grafico");
+    animarElemento("boxplot");
+    animarElemento("ranking");
+    animarElemento("metrics");
+
+    carregarMetrics(cenario);
+    carregarRanking(cenario);
+    carregarTimeline(cenario);
 }
 
 /*
  * ============================================================
- * REGRESSÃO LOG-LOG + R²
+ * 📊 MÉTRICAS
  * ============================================================
  */
-function regressao(dados) {
+async function carregarMetrics(cenario) {
 
-    const xs = dados.map(p => Math.log(p.x));
-    const ys = dados.map(p => Math.log(p.y));
+    const res = await fetch(`resultados/${cenario}_metrics.json`);
+    const data = await res.json();
 
-    const n = xs.length;
+    let html = "<tr><th>Algoritmo</th><th>k</th><th>R²</th></tr>";
 
-    let sx = 0, sy = 0, sxy = 0, sx2 = 0;
+    Object.entries(data).forEach(([alg, info]) => {
+        html += `
+            <tr>
+                <td>${alg}</td>
+                <td>${info.k}</td>
+                <td>${info.r2}</td>
+            </tr>
+        `;
+    });
 
-    for (let i = 0; i < n; i++) {
-        sx += xs[i];
-        sy += ys[i];
-        sxy += xs[i] * ys[i];
-        sx2 += xs[i] * xs[i];
-    }
-
-    const k = (n * sxy - sx * sy) / (n * sx2 - sx * sx);
-    const logC = (sy - k * sx) / n;
-    const c = Math.exp(logC);
-
-    const mediaY = sy / n;
-
-    let ssTot = 0, ssRes = 0;
-
-    for (let i = 0; i < n; i++) {
-
-        const yPrev = logC + k * xs[i];
-
-        ssTot += Math.pow(ys[i] - mediaY, 2);
-        ssRes += Math.pow(ys[i] - yPrev, 2);
-    }
-
-    const r2 = 1 - (ssRes / ssTot);
-
-    return { k, c, r2 };
+    document.getElementById("metrics").innerHTML = html;
 }
 
 /*
  * ============================================================
- * PREVISÃO
+ * 🏆 RANKING + DESTAQUE
  * ============================================================
  */
-function preverTempo(dados, n) {
-    const { k, c } = regressao(dados);
-    return c * Math.pow(n, k);
-}
+async function carregarRanking(cenario) {
 
-/*
- * ============================================================
- * RANKING
- * ============================================================
- */
-function calcularRanking(dados) {
+    const res = await fetch(`resultados/${cenario}_ranking.json`);
+    const data = await res.json();
 
-    const ranking = [];
+    const lista = Object.entries(data).map(([alg, info]) => ({
+        algoritmo: alg,
+        score: info.score,
+        status: info.status
+    }));
 
-    Object.keys(dados).forEach(alg => {
+    lista.sort((a, b) => b.score - a.score);
 
-        const t = preverTempo(dados[alg], 100000);
+    const container = document.getElementById("ranking");
+    container.innerHTML = "";
 
-        ranking.push({ algoritmo: alg, tempo: t });
-    });
+    lista.forEach((item, i) => {
 
-    ranking.sort((a, b) => a.tempo - b.tempo);
+        let classe = "ok";
+        if (item.status === "REGRESSAO") classe = "regressao";
+        if (item.status === "INSTAVEL") classe = "instavel";
+        if (item.status === "COMPLEXO") classe = "complexo";
 
-    return ranking;
-}
+        const destaque = i === 0 ? "🏆 " : "";
+        const estilo = i === 0 ? "ranking-item best" : "ranking-item";
 
-/*
- * ============================================================
- * ALERTAS DE REGRESSÃO
- * ============================================================
- */
-function detectarRegressao(a, b) {
-
-    const alertas = [];
-
-    Object.keys(b).forEach(alg => {
-
-        if (!a[alg]) return;
-
-        const tA = preverTempo(a[alg], 100000);
-        const tB = preverTempo(b[alg], 100000);
-
-        const diff = (tB - tA) / tA;
-
-        if (diff > 0.15) {
-            alertas.push({ algoritmo: alg, diff });
-        }
-    });
-
-    return alertas;
-}
-
-/*
- * ============================================================
- * RENDER
- * ============================================================
- */
-function renderRanking(dados) {
-
-    const ul = document.getElementById("ranking");
-    ul.innerHTML = "";
-
-    calcularRanking(dados).forEach((r, i) => {
-
-        const li = document.createElement("li");
-        li.textContent = `${i+1}º ${r.algoritmo}`;
-
-        ul.appendChild(li);
-    });
-}
-
-function renderAlertas(a, b) {
-
-    const div = document.getElementById("alertas");
-    div.innerHTML = "";
-
-    const alertas = detectarRegressao(a, b);
-
-    if (!alertas.length) {
-        div.innerHTML = "✅ Sem regressões";
-        return;
-    }
-
-    alertas.forEach(a => {
-        div.innerHTML += `❌ ${a.algoritmo} piorou<br>`;
-    });
-}
-
-function renderModelo(dados) {
-
-    const div = document.getElementById("complexidade");
-    div.innerHTML = "";
-
-    Object.keys(dados).forEach(alg => {
-
-        const { k, r2 } = regressao(dados[alg]);
-
-        div.innerHTML += `${alg}: n^${k.toFixed(2)} (R²=${r2.toFixed(2)})<br>`;
-    });
-}
-
-function renderPrevisao(dados) {
-
-    const div = document.getElementById("previsao");
-    div.innerHTML = "";
-
-    Object.keys(dados).forEach(alg => {
-
-        const t = preverTempo(dados[alg], 100000);
-
-        div.innerHTML += `${alg}: ${Math.round(t)}<br>`;
+        container.innerHTML += `
+            <div class="${estilo} ${classe}">
+                ${destaque}${i+1}º - ${item.algoritmo}
+                | Score: ${item.score.toFixed(3)}
+            </div>
+        `;
     });
 }
 
 /*
  * ============================================================
- * COMPARAÇÃO PRINCIPAL
+ * 📈 TIMELINE
  * ============================================================
  */
-async function comparar() {
+async function carregarTimeline(cenario) {
 
-    const a = document.getElementById("execucaoA").value;
-    const b = document.getElementById("execucaoB").value;
-
-    const dadosA_all = await carregarCSV(a);
-    const dadosB_all = await carregarCSV(b);
-
-    popularCenarios(dadosB_all);
-
-    const cenario = document.getElementById("cenario").value ||
-                    Object.keys(dadosB_all)[0];
-
-    const dadosA = dadosA_all[cenario];
-    const dadosB = dadosB_all[cenario];
+    const res = await fetch(`resultados/${cenario}_timeline.json`);
+    const data = await res.json();
 
     const datasets = [];
 
-    Object.keys(dadosB).forEach(alg => {
-
-        // dados reais
-        datasets.push({
-            label: `${alg}`,
-            data: dadosB[alg],
-            borderWidth: 2
-        });
-
-        // curva ajustada
-        const { k, c } = regressao(dadosB[alg]);
-
-        const curva = dadosB[alg].map(p => ({
-            x: p.x,
-            y: c * Math.pow(p.x, k)
-        }));
+    Object.entries(data).forEach(([alg, pontos]) => {
 
         datasets.push({
-            label: `${alg} (fit)`,
-            data: curva,
-            borderDash: [5, 5]
+            label: alg,
+            data: pontos.map(p => ({ x: p.data, y: p.tempo })),
+            fill: false
         });
     });
 
     if (chart) chart.destroy();
 
-    const ctx = document.getElementById("grafico").getContext("2d");
-
-    chart = new Chart(ctx, {
+    chart = new Chart(document.getElementById("timeline"), {
         type: "line",
-        data: { datasets }
+        data: { datasets },
+        options: {
+            parsing: false,
+            scales: {
+                x: { type: "category" }
+            }
+        }
     });
-
-    renderRanking(dadosB);
-    renderAlertas(dadosA, dadosB);
-    renderModelo(dadosB);
-    renderPrevisao(dadosB);
 }
 
 /*
  * ============================================================
- * INICIALIZAÇÃO
+ * 🏷️ BADGES
  * ============================================================
  */
-async function iniciar() {
+async function carregarBadges() {
 
-    const res = await fetch("resultados/historico/index.json");
-    const arquivos = await res.json();
+    const arquivos = [
+        "badge_score.json",
+        "badge_maturity.json",
+        "badge_regressao.json",
+        "badge_best.json",
+        "badge_trend.json",
+        "badge_quality.json"
+    ];
 
-    const selA = document.getElementById("execucaoA");
-    const selB = document.getElementById("execucaoB");
+    const container = document.getElementById("badges");
+    if (!container) return;
 
-    arquivos.forEach(a => {
-        selA.add(new Option(a.arquivo, a.arquivo));
-        selB.add(new Option(a.arquivo, a.arquivo));
-    });
+    container.innerHTML = "";
 
-    selA.value = arquivos[0].arquivo;
-    selB.value = arquivos[arquivos.length - 1].arquivo;
+    for (const file of arquivos) {
+        try {
+            const res = await fetch(`resultados/${file}`);
+            const data = await res.json();
 
-    comparar();
+            container.innerHTML += `
+                <span>
+                    ${data.label}: <b>${data.message}</b>
+                </span>
+            `;
+        } catch (e) {}
+    }
 }
 
-iniciar();
+/*
+ * ============================================================
+ * 🚀 INIT
+ * ============================================================
+ */
+document
+    .getElementById("cenarioSelect")
+    .addEventListener("change", trocarCenario);
+
+trocarCenario();
+carregarBadges();
