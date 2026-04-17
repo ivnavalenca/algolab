@@ -1,32 +1,32 @@
 {
   "BubbleSort": {
-    "score": 0.494,
-    "k": 1.11,
-    "r2": 0.99,
+    "score": 0.483,
+    "k": 1.17,
+    "r2": 0.96,
     "status": "OK"
   },
   "InsertionSort": {
-    "score": 0.48,
-    "k": 1.27,
+    "score": 0.483,
+    "k": 1.22,
     "r2": 0.96,
     "status": "OK"
   },
   "SelectionSort": {
-    "score": 0.487,
+    "score": 0.48,
     "k": 1.23,
-    "r2": 0.99,
+    "r2": 0.95,
     "status": "OK"
   },
   "MergeSort": {
-    "score": 0.488,
-    "k": 1.28,
+    "score": 0.486,
+    "k": 1.32,
     "r2": 1.0,
     "status": "OK"
   },
   "QuickSort": {
     "score": 0.496,
-    "k": 0.73,
-    "r2": 0.9,
+    "k": 0.74,
+    "r2": 0.91,
     "status": "OK"
   }
 }
