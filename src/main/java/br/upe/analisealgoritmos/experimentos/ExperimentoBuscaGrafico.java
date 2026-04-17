@@ -6,19 +6,16 @@ package br.upe.analisealgoritmos.experimentos;
  * ============================================================
  *
  * OBJETIVO:
- * Executar experimentos de algoritmos de busca e registrar
- * o tempo de execução para análise posterior.
+ * Benchmark de algoritmos de busca.
  *
  * ALGORITMOS:
  * ✔ Busca Linear
  * ✔ Busca Binária
  *
- * SAÍDA:
- * ✔ resultados/latest.csv
- * ✔ resultados/historico/run_<timestamp>.csv
- *
- * INTEGRAÇÃO:
- * ✔ CSVExporter.salvarPipeline()
+ * PADRÃO:
+ * ✔ Interface Experimento
+ * ✔ GeradorDados
+ * ✔ ConfigBenchmark
  *
  * ============================================================
  */
@@ -26,129 +23,56 @@ package br.upe.analisealgoritmos.experimentos;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.upe.analisealgoritmos.utils.CSVExporter;
+import br.upe.analisealgoritmos.experimentos.base.Experimento;
+import br.upe.analisealgoritmos.utils.config.ConfigBenchmark;
+import br.upe.analisealgoritmos.utils.dados.GeradorDados;
 
-public class ExperimentoBuscaGrafico {
+public class ExperimentoBuscaGrafico implements Experimento {
 
-    /*
-     * ============================================================
-     * TAMANHOS DE ENTRADA
-     * ============================================================
-     */
-    private static final int[] TAMANHOS = {100, 500, 1000, 2000, 5000};
+    @Override
+    public String getNome() {
+        return "Busca";
+    }
 
-    /*
-     * ============================================================
-     * EXECUÇÃO PRINCIPAL
-     * ============================================================
-     */
-    public static void main(String[] args) {
-
-        System.out.println("🔍 Executando experimento de busca...");
+    @Override
+    public List<String[]> executar() {
 
         List<String[]> resultados = new ArrayList<>();
 
-        for (int n : TAMANHOS) {
+        for (int n : ConfigBenchmark.TAMANHOS_PADRAO) {
 
-            int[] array = gerarArrayOrdenado(n);
-            int alvo = array[n / 2];
+            int[] dados = GeradorDados.gerar(n, GeradorDados.TipoEntrada.ORDENADO);
+            int alvo = dados[n / 2];
 
-            /*
-             * ========================================================
-             * BUSCA LINEAR
-             * ========================================================
-             */
-            long inicio = System.nanoTime();
-            buscaLinear(array, alvo);
-            long tempoLinear = System.nanoTime() - inicio;
+            long ini = System.nanoTime();
+            buscaLinear(dados, alvo);
+            long t1 = System.nanoTime() - ini;
 
-            resultados.add(new String[]{
-                    String.valueOf(n),
-                    "medio",
-                    "Linear",
-                    String.valueOf(tempoLinear)
-            });
+            ini = System.nanoTime();
+            buscaBinaria(dados, alvo);
+            long t2 = System.nanoTime() - ini;
 
-            /*
-             * ========================================================
-             * BUSCA BINÁRIA
-             * ========================================================
-             */
-            inicio = System.nanoTime();
-            buscaBinaria(array, alvo);
-            long tempoBinaria = System.nanoTime() - inicio;
-
-            resultados.add(new String[]{
-                    String.valueOf(n),
-                    "medio",
-                    "Binaria",
-                    String.valueOf(tempoBinaria)
-            });
+            resultados.add(new String[]{n+"","ordenado","Linear",t1+""});
+            resultados.add(new String[]{n+"","ordenado","Binaria",t2+""});
         }
 
-        /*
-         * ============================================================
-         * 🔥 EXPORTAÇÃO PADRÃO (PIPELINE)
-         * ============================================================
-         */
-        CSVExporter.salvarPipeline(resultados);
-
-        System.out.println("✅ Experimento de busca concluído!");
+        return resultados;
     }
 
-    /*
-     * ============================================================
-     * BUSCA LINEAR
-     * ============================================================
-     */
-    private static int buscaLinear(int[] array, int alvo) {
-
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] == alvo) return i;
-        }
-
+    private int buscaLinear(int[] arr, int alvo) {
+        for (int i = 0; i < arr.length; i++)
+            if (arr[i] == alvo) return i;
         return -1;
     }
 
-    /*
-     * ============================================================
-     * BUSCA BINÁRIA
-     * ============================================================
-     */
-    private static int buscaBinaria(int[] array, int alvo) {
-
-        int esquerda = 0;
-        int direita = array.length - 1;
-
-        while (esquerda <= direita) {
-
-            int meio = (esquerda + direita) / 2;
-
-            if (array[meio] == alvo) return meio;
-
-            if (array[meio] < alvo) {
-                esquerda = meio + 1;
-            } else {
-                direita = meio - 1;
-            }
+    private int buscaBinaria(int[] arr, int alvo) {
+        int l = 0, r = arr.length - 1;
+        while (l <= r) {
+            int m = (l + r) / 2;
+            if (arr[m] == alvo) return m;
+            if (arr[m] < alvo) l = m + 1;
+            else r = m - 1;
         }
-
         return -1;
-    }
-
-    /*
-     * ============================================================
-     * GERAR ARRAY ORDENADO
-     * ============================================================
-     */
-    private static int[] gerarArrayOrdenado(int n) {
-
-        int[] array = new int[n];
-
-        for (int i = 0; i < n; i++) {
-            array[i] = i;
-        }
-
-        return array;
     }
 }

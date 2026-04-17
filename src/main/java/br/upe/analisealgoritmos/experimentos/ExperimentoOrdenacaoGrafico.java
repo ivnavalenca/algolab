@@ -6,8 +6,7 @@ package br.upe.analisealgoritmos.experimentos;
  * ============================================================
  *
  * OBJETIVO:
- * Executar experimentos de algoritmos de ordenação e registrar
- * o tempo de execução para análise posterior.
+ * Benchmark de algoritmos de ordenação.
  *
  * ALGORITMOS:
  * ✔ Bubble Sort
@@ -16,12 +15,10 @@ package br.upe.analisealgoritmos.experimentos;
  * ✔ Merge Sort
  * ✔ Quick Sort
  *
- * SAÍDA:
- * ✔ resultados/latest.csv
- * ✔ resultados/historico/run_<timestamp>.csv
- *
- * INTEGRAÇÃO:
- * ✔ CSVExporter.salvarPipeline()
+ * PADRÃO:
+ * ✔ Interface Experimento
+ * ✔ GeradorDados
+ * ✔ ConfigBenchmark
  *
  * ============================================================
  */
@@ -29,35 +26,26 @@ package br.upe.analisealgoritmos.experimentos;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
-import br.upe.analisealgoritmos.utils.CSVExporter;
+import br.upe.analisealgoritmos.experimentos.base.Experimento;
+import br.upe.analisealgoritmos.utils.config.ConfigBenchmark;
+import br.upe.analisealgoritmos.utils.dados.GeradorDados;
 
-public class ExperimentoOrdenacaoGrafico {
+public class ExperimentoOrdenacaoGrafico implements Experimento {
 
-    /*
-     * ============================================================
-     * TAMANHOS DE ENTRADA
-     * ============================================================
-     */
-    private static final int[] TAMANHOS = {100, 500, 1000, 2000, 5000};
+    @Override
+    public String getNome() {
+        return "Ordenacao";
+    }
 
-    private static final Random random = new Random();
-
-    /*
-     * ============================================================
-     * EXECUÇÃO PRINCIPAL
-     * ============================================================
-     */
-    public static void main(String[] args) {
-
-        System.out.println("📊 Executando experimento de ordenação...");
+    @Override
+    public List<String[]> executar() {
 
         List<String[]> resultados = new ArrayList<>();
 
-        for (int n : TAMANHOS) {
+        for (int n : ConfigBenchmark.TAMANHOS_PADRAO) {
 
-            int[] base = gerarArrayAleatorio(n);
+            int[] base = GeradorDados.gerar(n, GeradorDados.TipoEntrada.ALEATORIO);
 
             executarAlgoritmo("Bubble", base, resultados, n);
             executarAlgoritmo("Selection", base, resultados, n);
@@ -66,43 +54,26 @@ public class ExperimentoOrdenacaoGrafico {
             executarAlgoritmo("Quick", base, resultados, n);
         }
 
-        /*
-         * ============================================================
-         * 🔥 EXPORTAÇÃO PADRÃO (PIPELINE)
-         * ============================================================
-         */
-        CSVExporter.salvarPipeline(resultados);
-
-        System.out.println("✅ Experimento de ordenação concluído!");
+        return resultados;
     }
 
     /*
      * ============================================================
-     * EXECUTAR ALGORITMO
+     * EXECUÇÃO PADRÃO
      * ============================================================
      */
-    private static void executarAlgoritmo(String nome, int[] base, List<String[]> resultados, int n) {
+    private void executarAlgoritmo(String nome, int[] base, List<String[]> resultados, int n) {
 
         int[] copia = Arrays.copyOf(base, base.length);
 
         long inicio = System.nanoTime();
 
         switch (nome) {
-            case "Bubble":
-                bubbleSort(copia);
-                break;
-            case "Selection":
-                selectionSort(copia);
-                break;
-            case "Insertion":
-                insertionSort(copia);
-                break;
-            case "Merge":
-                mergeSort(copia, 0, copia.length - 1);
-                break;
-            case "Quick":
-                quickSort(copia, 0, copia.length - 1);
-                break;
+            case "Bubble": bubbleSort(copia); break;
+            case "Selection": selectionSort(copia); break;
+            case "Insertion": insertionSort(copia); break;
+            case "Merge": mergeSort(copia, 0, copia.length - 1); break;
+            case "Quick": quickSort(copia, 0, copia.length - 1); break;
         }
 
         long tempo = System.nanoTime() - inicio;
@@ -117,61 +88,56 @@ public class ExperimentoOrdenacaoGrafico {
 
     /*
      * ============================================================
-     * ALGORITMOS DE ORDENAÇÃO
+     * ALGORITMOS
      * ============================================================
      */
 
-    private static void bubbleSort(int[] arr) {
-        int n = arr.length;
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = 0; j < n - i - 1; j++) {
+    private void bubbleSort(int[] arr) {
+        for (int i = 0; i < arr.length - 1; i++)
+            for (int j = 0; j < arr.length - i - 1; j++)
                 if (arr[j] > arr[j + 1]) {
-                    int temp = arr[j];
+                    int t = arr[j];
                     arr[j] = arr[j + 1];
-                    arr[j + 1] = temp;
+                    arr[j + 1] = t;
                 }
-            }
-        }
     }
 
-    private static void selectionSort(int[] arr) {
+    private void selectionSort(int[] arr) {
         for (int i = 0; i < arr.length - 1; i++) {
             int min = i;
-            for (int j = i + 1; j < arr.length; j++) {
+            for (int j = i + 1; j < arr.length; j++)
                 if (arr[j] < arr[min]) min = j;
-            }
-            int temp = arr[min];
+
+            int t = arr[min];
             arr[min] = arr[i];
-            arr[i] = temp;
+            arr[i] = t;
         }
     }
 
-    private static void insertionSort(int[] arr) {
+    private void insertionSort(int[] arr) {
         for (int i = 1; i < arr.length; i++) {
-            int chave = arr[i];
+            int key = arr[i];
             int j = i - 1;
 
-            while (j >= 0 && arr[j] > chave) {
+            while (j >= 0 && arr[j] > key) {
                 arr[j + 1] = arr[j];
                 j--;
             }
 
-            arr[j + 1] = chave;
+            arr[j + 1] = key;
         }
     }
 
-    private static void mergeSort(int[] arr, int l, int r) {
+    private void mergeSort(int[] arr, int l, int r) {
         if (l < r) {
             int m = (l + r) / 2;
-
             mergeSort(arr, l, m);
             mergeSort(arr, m + 1, r);
-
             merge(arr, l, m, r);
         }
     }
 
-    private static void merge(int[] arr, int l, int m, int r) {
+    private void merge(int[] arr, int l, int m, int r) {
 
         int n1 = m - l + 1;
         int n2 = r - m;
@@ -184,59 +150,39 @@ public class ExperimentoOrdenacaoGrafico {
 
         int i = 0, j = 0, k = l;
 
-        while (i < n1 && j < n2) {
+        while (i < n1 && j < n2)
             arr[k++] = (L[i] <= R[j]) ? L[i++] : R[j++];
-        }
 
         while (i < n1) arr[k++] = L[i++];
         while (j < n2) arr[k++] = R[j++];
     }
 
-    private static void quickSort(int[] arr, int low, int high) {
+    private void quickSort(int[] arr, int low, int high) {
         if (low < high) {
-
             int pi = partition(arr, low, high);
-
             quickSort(arr, low, pi - 1);
             quickSort(arr, pi + 1, high);
         }
     }
 
-    private static int partition(int[] arr, int low, int high) {
+    private int partition(int[] arr, int low, int high) {
 
         int pivot = arr[high];
         int i = low - 1;
 
         for (int j = low; j < high; j++) {
-
             if (arr[j] < pivot) {
                 i++;
-                int temp = arr[i];
+                int t = arr[i];
                 arr[i] = arr[j];
-                arr[j] = temp;
+                arr[j] = t;
             }
         }
 
-        int temp = arr[i + 1];
+        int t = arr[i + 1];
         arr[i + 1] = arr[high];
-        arr[high] = temp;
+        arr[high] = t;
 
         return i + 1;
-    }
-
-    /*
-     * ============================================================
-     * GERAR ARRAY ALEATÓRIO
-     * ============================================================
-     */
-    private static int[] gerarArrayAleatorio(int n) {
-
-        int[] array = new int[n];
-
-        for (int i = 0; i < n; i++) {
-            array[i] = random.nextInt(n);
-        }
-
-        return array;
     }
 }

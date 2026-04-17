@@ -1,164 +1,148 @@
 package br.upe.analisealgoritmos.experimentos;
 
-import java.io.File;
-import java.util.Random;
-
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtils;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-
-import br.upe.analisealgoritmos.grafos.BFS;
-import br.upe.analisealgoritmos.grafos.DFS;
-import br.upe.analisealgoritmos.grafos.Dijkstra;
-import br.upe.analisealgoritmos.grafos.Grafo;
-import br.upe.analisealgoritmos.utils.GerenciadorResultados;
-import br.upe.analisealgoritmos.utils.GraficoUtils;
-
 /*
  * ============================================================
  * CLASSE: ExperimentoGrafosGrafico
  * ============================================================
  *
  * OBJETIVO:
- * Comparar desempenho de algoritmos em grafos:
- * ✔ BFS
- * ✔ DFS
- * ✔ Dijkstra
+ * Benchmark de algoritmos em grafos.
+ *
+ * ALGORITMOS:
+ * ✔ BFS (Busca em Largura)
+ * ✔ DFS (Busca em Profundidade)
+ *
+ * PADRÃO:
+ * ✔ Interface Experimento
+ * ✔ ConfigBenchmark
+ *
+ * OBS:
+ * Grafo simples gerado automaticamente (lista de adjacência)
  *
  * ============================================================
  */
 
-public class ExperimentoGrafosGrafico {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
-    public static void executar() {
+import br.upe.analisealgoritmos.experimentos.base.Experimento;
+import br.upe.analisealgoritmos.utils.config.ConfigBenchmark;
 
-        int[] tamanhos = {100, 500, 1000, 2000};
+public class ExperimentoGrafosGrafico implements Experimento {
 
-        XYSeries bfsSeries = new XYSeries("BFS");
-        XYSeries dfsSeries = new XYSeries("DFS");
-        XYSeries dijkstraSeries = new XYSeries("Dijkstra");
+    @Override
+    public String getNome() {
+        return "Grafos";
+    }
 
-        for (int n : tamanhos) {
+    @Override
+    public List<String[]> executar() {
 
-            Grafo grafo = gerarGrafo(n, n * 2);
+        List<String[]> resultados = new ArrayList<>();
 
-            long tempoBFS = medir(() -> BFS.executar(grafo, 0));
-            long tempoDFS = medir(() -> DFS.executar(grafo, 0));
+        for (int n : ConfigBenchmark.TAMANHOS_PADRAO) {
 
-            int[][] matriz = gerarMatrizAdjacencia(n);
-            long tempoDijkstra = medir(() -> Dijkstra.executar(matriz, 0));
+            Map<Integer, List<Integer>> grafo = gerarGrafo(n);
 
-            bfsSeries.add(n, tempoBFS);
-            dfsSeries.add(n, tempoDFS);
-            dijkstraSeries.add(n, tempoDijkstra);
+            /*
+             * ========================================================
+             * BFS
+             * ========================================================
+             */
+            long inicio = System.nanoTime();
+            bfs(grafo, 0);
+            long tempoBFS = System.nanoTime() - inicio;
 
-            System.out.println("✔ n=" + n + " concluído");
+            /*
+             * ========================================================
+             * DFS
+             * ========================================================
+             */
+            inicio = System.nanoTime();
+            dfs(grafo, 0, new HashSet<>());
+            long tempoDFS = System.nanoTime() - inicio;
+
+            resultados.add(new String[]{
+                    String.valueOf(n),
+                    "grafo",
+                    "BFS",
+                    String.valueOf(tempoBFS)
+            });
+
+            resultados.add(new String[]{
+                    String.valueOf(n),
+                    "grafo",
+                    "DFS",
+                    String.valueOf(tempoDFS)
+            });
         }
 
-        /*
-         * ============================================================
-         * DATASET
-         * ============================================================
-         */
-        XYSeriesCollection dataset = new XYSeriesCollection();
-        dataset.addSeries(bfsSeries);
-        dataset.addSeries(dfsSeries);
-        dataset.addSeries(dijkstraSeries);
-
-        /*
-         * ============================================================
-         * GRÁFICO
-         * ============================================================
-         */
-        JFreeChart chart = ChartFactory.createXYLineChart(
-                "Algoritmos em Grafos (BFS vs DFS vs Dijkstra)",
-                "Número de vértices (V)",
-                "Tempo (ns)",
-                dataset
-        );
-
-        // 🔥 estilo avançado
-        GraficoUtils.aplicarEstiloXY(chart, dataset);
-
-        /*
-         * ============================================================
-         * SALVAR
-         * ============================================================
-         */
-        try {
-
-            String caminho = GerenciadorResultados.caminhoArquivo("grafos.png");
-
-            ChartUtils.saveChartAsPNG(
-                    new File(caminho),
-                    chart,
-                    800,
-                    600
-            );
-
-            System.out.println("📊 Gráfico de grafos salvo em: " + caminho);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        return resultados;
     }
 
     /*
      * ============================================================
-     * MEDIÇÃO DE TEMPO
+     * GERADOR DE GRAFO
      * ============================================================
      */
-    private static long medir(Runnable r) {
+    private Map<Integer, List<Integer>> gerarGrafo(int n) {
 
-        long inicio = System.nanoTime();
-        r.run();
-        long fim = System.nanoTime();
+        Map<Integer, List<Integer>> grafo = new HashMap<>();
 
-        return fim - inicio;
-    }
+        for (int i = 0; i < n; i++) {
+            grafo.put(i, new ArrayList<>());
 
-    /*
-     * ============================================================
-     * GERA GRAFO ALEATÓRIO
-     * ============================================================
-     */
-    private static Grafo gerarGrafo(int V, int E) {
-
-        Grafo g = new Grafo(V);
-        Random rand = new Random(42); // reprodutível
-
-        for (int i = 0; i < E; i++) {
-            int origem = rand.nextInt(V);
-            int destino = rand.nextInt(V);
-
-            g.adicionarAresta(origem, destino);
-        }
-
-        return g;
-    }
-
-    /*
-     * ============================================================
-     * GERA MATRIZ PARA DIJKSTRA
-     * ============================================================
-     */
-    private static int[][] gerarMatrizAdjacencia(int V) {
-
-        int[][] matriz = new int[V][V];
-        Random rand = new Random(42);
-
-        for (int i = 0; i < V; i++) {
-            for (int j = 0; j < V; j++) {
-                if (i != j && rand.nextDouble() < 0.3) {
-                    matriz[i][j] = rand.nextInt(10) + 1;
-                } else {
-                    matriz[i][j] = 0;
-                }
+            // conecta com anterior (estrutura linear)
+            if (i > 0) {
+                grafo.get(i).add(i - 1);
+                grafo.get(i - 1).add(i);
             }
         }
 
-        return matriz;
+        return grafo;
+    }
+
+    /*
+     * ============================================================
+     * BFS
+     * ============================================================
+     */
+    private void bfs(Map<Integer, List<Integer>> grafo, int inicio) {
+
+        Queue<Integer> fila = new LinkedList<>();
+        Set<Integer> visitados = new HashSet<>();
+
+        fila.add(inicio);
+
+        while (!fila.isEmpty()) {
+
+            int atual = fila.poll();
+
+            if (!visitados.add(atual)) continue;
+
+            for (int vizinho : grafo.get(atual)) {
+                fila.add(vizinho);
+            }
+        }
+    }
+
+    /*
+     * ============================================================
+     * DFS
+     * ============================================================
+     */
+    private void dfs(Map<Integer, List<Integer>> grafo, int no, Set<Integer> visitados) {
+
+        if (!visitados.add(no)) return;
+
+        for (int vizinho : grafo.get(no)) {
+            dfs(grafo, vizinho, visitados);
+        }
     }
 }

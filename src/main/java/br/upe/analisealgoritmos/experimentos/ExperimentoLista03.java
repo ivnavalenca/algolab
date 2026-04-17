@@ -6,86 +6,85 @@ package br.upe.analisealgoritmos.experimentos;
  * ============================================================
  *
  * OBJETIVO:
- * Executar experimentos adicionais (Lista 03) envolvendo
- * algoritmos e registrar tempos de execução.
+ * Executar experimentos adicionais (Lista 03).
  *
- * OBS:
- * Este experimento pode variar conforme a atividade,
- * mas segue o padrão de exportação da pipeline Algolab.
+ * FOCO:
+ * ✔ Comparação de estratégias de busca
+ * ✔ Demonstração de impacto de ordenação
  *
- * SAÍDA:
- * ✔ resultados/latest.csv
- * ✔ resultados/historico/run_<timestamp>.csv
- *
- * INTEGRAÇÃO:
- * ✔ CSVExporter.salvarPipeline()
+ * PADRÃO:
+ * ✔ Interface Experimento
+ * ✔ GeradorDados
+ * ✔ ConfigBenchmark
  *
  * ============================================================
  */
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import br.upe.analisealgoritmos.utils.CSVExporter;
+import br.upe.analisealgoritmos.experimentos.base.Experimento;
+import br.upe.analisealgoritmos.utils.config.ConfigBenchmark;
+import br.upe.analisealgoritmos.utils.dados.GeradorDados;
 
-public class ExperimentoLista03 {
+public class ExperimentoLista03 implements Experimento {
 
-    /*
-     * ============================================================
-     * TAMANHOS DE ENTRADA
-     * ============================================================
-     */
-    private static final int[] TAMANHOS = {100, 500, 1000, 2000, 5000};
+    @Override
+    public String getNome() {
+        return "Lista03";
+    }
 
-    private static final Random random = new Random();
-
-    /*
-     * ============================================================
-     * EXECUÇÃO PRINCIPAL
-     * ============================================================
-     */
-    public static void main(String[] args) {
-
-        System.out.println("📘 Executando Experimento Lista 03...");
+    @Override
+    public List<String[]> executar() {
 
         List<String[]> resultados = new ArrayList<>();
 
-        for (int n : TAMANHOS) {
-
-            int[] dados = gerarDados(n);
+        for (int n : ConfigBenchmark.TAMANHOS_PADRAO) {
 
             /*
              * ========================================================
-             * EXEMPLO: BUSCA LINEAR (PODE ADAPTAR CONFORME SUA LISTA)
+             * DADOS ALEATÓRIOS
              * ========================================================
              */
+            int[] dados = GeradorDados.gerar(n, GeradorDados.TipoEntrada.ALEATORIO);
             int alvo = dados[n / 2];
 
+            /*
+             * ========================================================
+             * BUSCA LINEAR
+             * ========================================================
+             */
             long inicio = System.nanoTime();
             buscaLinear(dados, alvo);
-            long tempo = System.nanoTime() - inicio;
+            long tempoLinear = System.nanoTime() - inicio;
 
             resultados.add(new String[]{
                     String.valueOf(n),
                     "lista03",
                     "Linear",
-                    String.valueOf(tempo)
+                    String.valueOf(tempoLinear)
             });
 
             /*
-             * 👉 Você pode adicionar mais algoritmos aqui
+             * ========================================================
+             * BUSCA BINÁRIA (DADOS ORDENADOS)
+             * ========================================================
              */
+            int[] ordenado = GeradorDados.gerar(n, GeradorDados.TipoEntrada.ORDENADO);
+
+            inicio = System.nanoTime();
+            buscaBinaria(ordenado, alvo);
+            long tempoBinaria = System.nanoTime() - inicio;
+
+            resultados.add(new String[]{
+                    String.valueOf(n),
+                    "lista03",
+                    "Binaria",
+                    String.valueOf(tempoBinaria)
+            });
         }
 
-        /*
-         * ============================================================
-         * 🔥 EXPORTAÇÃO PADRÃO (PIPELINE)
-         * ============================================================
-         */
-        CSVExporter.salvarPipeline(resultados);
-
-        System.out.println("✅ Experimento Lista 03 concluído!");
+        return resultados;
     }
 
     /*
@@ -93,10 +92,10 @@ public class ExperimentoLista03 {
      * BUSCA LINEAR
      * ============================================================
      */
-    private static int buscaLinear(int[] array, int alvo) {
+    private int buscaLinear(int[] arr, int alvo) {
 
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] == alvo) return i;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == alvo) return i;
         }
 
         return -1;
@@ -104,17 +103,23 @@ public class ExperimentoLista03 {
 
     /*
      * ============================================================
-     * GERAR DADOS ALEATÓRIOS
+     * BUSCA BINÁRIA
      * ============================================================
      */
-    private static int[] gerarDados(int n) {
+    private int buscaBinaria(int[] arr, int alvo) {
 
-        int[] dados = new int[n];
+        int l = 0, r = arr.length - 1;
 
-        for (int i = 0; i < n; i++) {
-            dados[i] = random.nextInt(n);
+        while (l <= r) {
+
+            int m = (l + r) / 2;
+
+            if (arr[m] == alvo) return m;
+
+            if (arr[m] < alvo) l = m + 1;
+            else r = m - 1;
         }
 
-        return dados;
+        return -1;
     }
 }

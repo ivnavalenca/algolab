@@ -1,6 +1,4 @@
-package br.upe.analisealgoritmos.utils;
-
-import java.util.Arrays;
+package br.upe.analisealgoritmos.utils.estatistica;
 
 /*
  * ============================================================
@@ -8,18 +6,20 @@ import java.util.Arrays;
  * ============================================================
  *
  * OBJETIVO:
- * Fornecer métricas estatísticas avançadas para análise de algoritmos
+ * Fornecer métricas estatísticas para análise de algoritmos.
  *
- * INCLUI:
+ * MÉTRICAS:
  * ✔ Média
  * ✔ Variância
  * ✔ Desvio padrão
  * ✔ Mediana
  * ✔ Intervalo de confiança (95%)
- * ✔ Teste t (comparação entre algoritmos)
+ * ✔ Teste t
  *
  * ============================================================
  */
+
+import java.util.Arrays;
 
 public class EstatisticaAvancada {
 
@@ -89,7 +89,7 @@ public class EstatisticaAvancada {
 
     /*
      * ============================================================
-     * TESTE T (comparação entre dois algoritmos)
+     * TESTE T
      * ============================================================
      */
     public static double tTest(double[] a, double[] b) {

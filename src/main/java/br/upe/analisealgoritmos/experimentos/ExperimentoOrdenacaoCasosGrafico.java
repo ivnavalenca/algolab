@@ -2,88 +2,66 @@ package br.upe.analisealgoritmos.experimentos;
 
 /*
  * ============================================================
- * IMPORTS
+ * CLASSE: ExperimentoOrdenacaoCasosGrafico
+ * ============================================================
+ *
+ * OBJETIVO:
+ * Comparar melhor vs pior caso
+ *
  * ============================================================
  */
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-import br.upe.analisealgoritmos.ordenacao.BubbleSort;
-import br.upe.analisealgoritmos.ordenacao.InsertionSort;
-import br.upe.analisealgoritmos.ordenacao.MergeSort;
-import br.upe.analisealgoritmos.ordenacao.Ordenador;
-import br.upe.analisealgoritmos.ordenacao.QuickSort;
-import br.upe.analisealgoritmos.ordenacao.SelectionSort;
-import br.upe.analisealgoritmos.utils.CSVExporter;
-import br.upe.analisealgoritmos.utils.GeradorDados;
-
-/*
- * ============================================================
- * CLASSE: ExperimentoOrdenacaoCasosGrafico
- * ============================================================
- *
- * OBJETIVO:
- * Avaliar algoritmos em diferentes cenários:
- * - aleatório
- * - ordenado
- * - reverso
- *
- * ============================================================
- */
+import br.upe.analisealgoritmos.utils.config.ConfigBenchmark;
+import br.upe.analisealgoritmos.utils.dados.GeradorDados;
+import br.upe.analisealgoritmos.utils.exportacao.CSVExporter;
 
 public class ExperimentoOrdenacaoCasosGrafico {
 
-    public static void executar() {
+    public static void main(String[] args) {
 
-        int[] tamanhos = {100, 1000, 5000};
+        System.out.println("📊 Casos de ordenação");
+
         List<String[]> resultados = new ArrayList<>();
 
-        List<Ordenador> algoritmos = List.of(
-                new BubbleSort(),
-                new InsertionSort(),
-                new SelectionSort(),
-                new MergeSort(),
-                new QuickSort()
-        );
+        for (int n : ConfigBenchmark.TAMANHOS_PADRAO) {
 
-        for (int n : tamanhos) {
+            int[] melhor = GeradorDados.gerar(n, GeradorDados.TipoEntrada.ORDENADO);
+            int[] pior = GeradorDados.gerar(n, GeradorDados.TipoEntrada.REVERSO);
 
-            Map<String, int[]> cenarios = Map.of(
-                    "aleatorio", GeradorDados.gerarVetorAleatorio(n),
-                    "ordenado", GeradorDados.gerarVetorOrdenado(n),
-                    "reverso", GeradorDados.gerarVetorReverso(n)
-            );
+            long t1 = medir(melhor);
+            long t2 = medir(pior);
 
-            for (Map.Entry<String, int[]> entry : cenarios.entrySet()) {
-
-                String cenario = entry.getKey();
-                int[] base = entry.getValue();
-
-                for (Ordenador algoritmo : algoritmos) {
-
-                    int[] vetor = Arrays.copyOf(base, base.length);
-
-                    long inicio = System.nanoTime();
-
-                    algoritmo.ordenar(vetor);
-
-                    long fim = System.nanoTime();
-
-                    resultados.add(new String[]{
-                            String.valueOf(n),
-                            cenario,
-                            algoritmo.nome(), // ✔ CORREÇÃO AQUI
-                            String.valueOf(fim - inicio)
-                    });
-                }
-            }
+            resultados.add(new String[]{n+"","melhor","Insertion",t1+""});
+            resultados.add(new String[]{n+"","pior","Insertion",t2+""});
         }
 
-        CSVExporter.salvar("resultados/ordenacao_casos.csv", resultados);
+        CSVExporter.salvarPipeline(resultados);
 
-        System.out.println("✅ Experimento de ordenação por casos finalizado.");
+        System.out.println("✅ Casos finalizados");
+    }
+
+    private static long medir(int[] arr) {
+
+        int[] copia = Arrays.copyOf(arr, arr.length);
+
+        long ini = System.nanoTime();
+
+        for (int i = 1; i < copia.length; i++) {
+            int key = copia[i];
+            int j = i - 1;
+
+            while (j >= 0 && copia[j] > key) {
+                copia[j + 1] = copia[j];
+                j--;
+            }
+
+            copia[j + 1] = key;
+        }
+
+        return System.nanoTime() - ini;
     }
 }
