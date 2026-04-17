@@ -34,7 +34,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("br.upe.analisealgoritmos.Principal")
+    mainClass.set("br.upe.analisealgoritmos.experimentos.runners.BenchmarkRunner")
 }
 
 /*
