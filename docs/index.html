@@ -1,5 +1,5 @@
 <!-- ==========================================================
-     DASHBOARD ALGOLAB
+     DASHBOARD ALGOLAB - VERSÃO EQUILIBRADA
 ========================================================== -->
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -12,68 +12,73 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            background: #0f172a;
-            color: #e2e8f0;
+            background: #f8fafc;
+            color: #0f172a;
         }
 
         header {
-            background: #020617;
+            background: #e2e8f0;
             padding: 20px;
             text-align: center;
-            border-bottom: 2px solid #1e293b;
+            border-bottom: 1px solid #cbd5f5;
         }
 
         h1 {
             margin: 0;
-            color: #38bdf8;
+            color: #1d4ed8;
         }
 
         .container {
             padding: 20px;
+            max-width: 1100px;
+            margin: auto;
         }
 
         .section {
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .section h2 {
-            border-left: 5px solid #38bdf8;
-            padding-left: 10px;
+            margin-bottom: 10px;
+            color: #1e293b;
         }
 
+        /* GRID SIMPLES */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 20px;
         }
 
+        /* CARD LEVE */
         .card {
-            background: #020617;
+            background: white;
             padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #1e293b;
-            transition: 0.3s;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
         }
 
-        .card:hover {
-            transform: scale(1.02);
-            border-color: #38bdf8;
+        .card h3 {
+            margin-top: 0;
+            font-size: 16px;
         }
 
         img {
             width: 100%;
-            border-radius: 8px;
+            border-radius: 6px;
+        }
+
+        .badges img {
+            margin: 5px;
         }
 
         footer {
             text-align: center;
-            padding: 20px;
-            border-top: 1px solid #1e293b;
+            padding: 15px;
+            border-top: 1px solid #e2e8f0;
             margin-top: 40px;
-        }
-
-        .badge {
-            margin: 5px;
+            font-size: 14px;
+            color: #64748b;
         }
     </style>
 </head>
@@ -81,8 +86,8 @@
 <body>
 
 <header>
-    <h1>🚀 Algolab Dashboard</h1>
-    <p>Análise de Algoritmos - Resultados Automatizados</p>
+    <h1>Algolab Dashboard</h1>
+    <p>Análise de Algoritmos</p>
 </header>
 
 <div class="container">
@@ -91,40 +96,42 @@
     <!-- BADGES -->
     <!-- ====================================================== -->
     <div class="section">
-        <h2>🏷️ Status do Projeto</h2>
+        <h2>Status do Projeto</h2>
 
-        <img class="badge" src="assets/badge_summary.svg">
-        <img class="badge" src="assets/badge_best.svg">
-        <img class="badge" src="assets/badge_quality.svg">
-        <img class="badge" src="assets/badge_trend.svg">
-        <img class="badge" src="assets/badge_project_score.svg">
+        <div class="badges">
+            <img src="assets/badge_summary.svg">
+            <img src="assets/badge_best.svg">
+            <img src="assets/badge_quality.svg">
+            <img src="assets/badge_trend.svg">
+            <img src="assets/badge_project_score.svg">
+        </div>
     </div>
 
     <!-- ====================================================== -->
     <!-- GRÁFICOS -->
     <!-- ====================================================== -->
     <div class="section">
-        <h2>📊 Visualização dos Resultados</h2>
+        <h2>Resultados</h2>
 
         <div class="grid">
 
             <div class="card">
-                <h3>📈 Comparação Geral</h3>
-                <img src="../graficos/line_chart.png">
+                <h3>Comparação Geral</h3>
+                <img src="graficos/line_chart.png">
             </div>
 
             <div class="card">
-                <h3>📦 Boxplot Geral</h3>
-                <img src="../graficos/boxplot_geral.png">
+                <h3>Boxplot</h3>
+                <img src="graficos/boxplot_geral.png">
             </div>
 
             <div class="card">
-                <h3>⚖️ Comparação Detalhada</h3>
-                <img src="../graficos/comparison_chart.png">
+                <h3>Comparação Detalhada</h3>
+                <img src="graficos/comparison_chart.png">
             </div>
 
             <div class="card">
-                <h3>📜 Histórico</h3>
+                <h3>Histórico</h3>
                 <img src="assets/history_chart.png">
             </div>
 
@@ -134,7 +141,7 @@
 </div>
 
 <footer>
-    <p>Desenvolvido com ❤️ | Algolab</p>
+    Algolab • Dashboard automático
 </footer>
 
 </body>
