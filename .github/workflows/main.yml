@@ -3,14 +3,15 @@
 # ============================================================
 #
 # OBJETIVO:
-# Automatizar todo o fluxo do projeto:
+# Automatizar TODO o fluxo do projeto:
 #
 # ✔ Build do projeto Java (Gradle)
 # ✔ Execução de benchmarks
-# ✔ Geração de latest.csv
-# ✔ Execução da pipeline Python completa
-# ✔ Geração de gráficos, badges e relatório
-# ✔ Publicação automática no GitHub Pages
+# ✔ Geração de resultados (latest.csv)
+# ✔ Execução da pipeline Python
+# ✔ Geração de gráficos e badges
+# ✔ Correção de paths para GitHub Pages
+# ✔ Publicação automática no dashboard
 #
 # ============================================================
 
@@ -20,7 +21,7 @@ name: Algolab Pipeline
 # 🔐 PERMISSÕES
 # ============================================================
 permissions:
-  contents: write   # necessário para commit automático
+  contents: write
 
 # ============================================================
 # 🔄 DISPARO DO WORKFLOW
@@ -32,7 +33,7 @@ on:
   pull_request:
     branches: [ main ]
 
-  workflow_dispatch:   # botão manual (Run workflow)
+  workflow_dispatch:
 
 # ============================================================
 # 🧱 JOB 1: BUILD
@@ -46,13 +47,13 @@ jobs:
     steps:
 
       # ------------------------------------------------------
-      # 📥 Clona repositório
+      # 📥 CLONE DO REPOSITÓRIO
       # ------------------------------------------------------
       - name: Checkout
         uses: actions/checkout@v4
 
       # ------------------------------------------------------
-      # ☕ Configura Java
+      # ☕ CONFIGURA JAVA
       # ------------------------------------------------------
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -61,13 +62,13 @@ jobs:
           java-version: 21
 
       # ------------------------------------------------------
-      # 🔐 Permissão para Gradle
+      # 🔐 PERMISSÃO GRADLE
       # ------------------------------------------------------
       - name: Permissão Gradle
         run: chmod +x gradlew
 
       # ------------------------------------------------------
-      # 🧱 Build do projeto
+      # 🧱 BUILD
       # ------------------------------------------------------
       - name: Build
         run: ./gradlew clean build
@@ -95,13 +96,13 @@ jobs:
         run: chmod +x gradlew
 
       # ------------------------------------------------------
-      # ▶️ Executa benchmark (gera latest.csv)
+      # ▶️ EXECUTA BENCHMARK
       # ------------------------------------------------------
       - name: Rodar Benchmark
         run: ./gradlew run
 
       # ------------------------------------------------------
-      # 📦 Salva resultados para próximo job
+      # 📦 SALVA RESULTADOS
       # ------------------------------------------------------
       - name: Upload resultados
         uses: actions/upload-artifact@v4
@@ -110,23 +111,23 @@ jobs:
           path: resultados/
 
   # =========================================================
-  # 🧠 JOB 3: PIPELINE COMPLETA
+  # 🧠 JOB 3: ANALYTICS + DASHBOARD
   # =========================================================
   analytics:
-    name: 🧠 Pipeline Completa (Python)
+    name: 🧠 Pipeline Completa + Dashboard
     needs: benchmark
     runs-on: ubuntu-latest
 
     steps:
 
       # ------------------------------------------------------
-      # 📥 Clona repositório
+      # 📥 CLONE
       # ------------------------------------------------------
       - name: Checkout
         uses: actions/checkout@v4
 
       # ------------------------------------------------------
-      # 📦 Recupera resultados do benchmark
+      # 📦 DOWNLOAD RESULTADOS
       # ------------------------------------------------------
       - name: Download resultados
         uses: actions/download-artifact@v4
@@ -135,7 +136,7 @@ jobs:
           path: resultados/
 
       # ------------------------------------------------------
-      # 🐍 Configura Python
+      # 🐍 SETUP PYTHON
       # ------------------------------------------------------
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -143,20 +144,50 @@ jobs:
           python-version: "3.11"
 
       # ------------------------------------------------------
-      # 📦 Instala dependências
+      # 📦 DEPENDÊNCIAS
       # ------------------------------------------------------
       - name: Instalar dependências
         run: |
           pip install pandas matplotlib numpy scikit-learn plotly
 
       # ------------------------------------------------------
-      # 🚀 Executa pipeline completa
+      # 🚀 EXECUTA PIPELINE PYTHON
       # ------------------------------------------------------
       - name: Executar pipeline Algolab
         run: python scripts/main_pipeline.py
 
+      # ======================================================
+      # 📁 PREPARAR DASHBOARD (CORREÇÃO CRÍTICA)
+      # ======================================================
+      - name: Preparar estrutura do dashboard
+        run: |
+          mkdir -p docs/graficos
+          mkdir -p docs/assets
+          mkdir -p docs/resultados
+
       # ------------------------------------------------------
-      # 📤 Commit automático dos resultados
+      # 📊 COPIAR GRÁFICOS PARA DOCS
+      # ------------------------------------------------------
+      - name: Copiar gráficos
+        run: |
+          cp -r graficos/* docs/graficos/ || true
+
+      # ------------------------------------------------------
+      # 🏷️ COPIAR BADGES
+      # ------------------------------------------------------
+      - name: Copiar badges
+        run: |
+          cp -r docs/assets/* docs/assets/ || true
+
+      # ------------------------------------------------------
+      # 📊 COPIAR RESULTADOS
+      # ------------------------------------------------------
+      - name: Copiar resultados
+        run: |
+          cp -r resultados/* docs/resultados/ || true
+
+      # ------------------------------------------------------
+      # 📤 COMMIT AUTOMÁTICO
       # ------------------------------------------------------
       - name: Commit resultados
         run: |
@@ -165,13 +196,13 @@ jobs:
 
           git pull origin main --rebase || true
 
-          git add docs/ graficos/ resultados/
+          git add docs/
 
-          git commit -m "🤖 atualização automática da pipeline" || echo "Sem mudanças"
+          git commit -m "🤖 atualiza dashboard automaticamente" || echo "Sem mudanças"
           git push || true
 
       # ------------------------------------------------------
-      # 🌐 Deploy no GitHub Pages
+      # 🌐 DEPLOY PAGES
       # ------------------------------------------------------
       - name: Deploy Pages
         if: github.ref == 'refs/heads/main'
