@@ -1,21 +1,26 @@
 # ============================================================
-# 🚀 ALGOLAB PIPELINE COMPLETO
+# 🚀 ALGOLAB CI/CD PIPELINE
 # ============================================================
 #
 # OBJETIVO:
-# - Build do projeto Java
-# - Execução de benchmarks
-# - Geração de métricas e gráficos
-# - Detecção de regressão
-# - Geração de badges dinâmicos
-# - Publicação do dashboard (GitHub Pages)
+# Automatizar todo o fluxo do projeto:
+#
+# ✔ Build do projeto Java (Gradle)
+# ✔ Execução de benchmarks
+# ✔ Geração de latest.csv
+# ✔ Execução da pipeline Python completa
+# ✔ Geração de gráficos, badges e relatório
+# ✔ Publicação automática no GitHub Pages
 #
 # ============================================================
 
 name: Algolab Pipeline
 
+# ============================================================
+# 🔐 PERMISSÕES
+# ============================================================
 permissions:
-  contents: write
+  contents: write   # necessário para commit automático
 
 # ============================================================
 # 🔄 DISPARO DO WORKFLOW
@@ -23,9 +28,11 @@ permissions:
 on:
   push:
     branches: [ main ]
+
   pull_request:
     branches: [ main ]
-  workflow_dispatch:
+
+  workflow_dispatch:   # botão manual (Run workflow)
 
 # ============================================================
 # 🧱 JOB 1: BUILD
@@ -33,18 +40,19 @@ on:
 jobs:
 
   build:
-    name: 🔧 Build do Projeto
+    name: 🔧 Build do Projeto Java
     runs-on: ubuntu-latest
 
     steps:
+
       # ------------------------------------------------------
-      # 📥 Checkout do código
+      # 📥 Clona repositório
       # ------------------------------------------------------
       - name: Checkout
         uses: actions/checkout@v4
 
       # ------------------------------------------------------
-      # ☕ Setup Java
+      # ☕ Configura Java
       # ------------------------------------------------------
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -53,13 +61,13 @@ jobs:
           java-version: 21
 
       # ------------------------------------------------------
-      # 🔐 Permissão Gradle
+      # 🔐 Permissão para Gradle
       # ------------------------------------------------------
       - name: Permissão Gradle
         run: chmod +x gradlew
 
       # ------------------------------------------------------
-      # 🧱 Build
+      # 🧱 Build do projeto
       # ------------------------------------------------------
       - name: Build
         run: ./gradlew clean build
@@ -73,6 +81,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -86,13 +95,13 @@ jobs:
         run: chmod +x gradlew
 
       # ------------------------------------------------------
-      # ▶️ Executa experimentos
+      # ▶️ Executa benchmark (gera latest.csv)
       # ------------------------------------------------------
       - name: Rodar Benchmark
         run: ./gradlew run
 
       # ------------------------------------------------------
-      # 📦 Upload dos resultados
+      # 📦 Salva resultados para próximo job
       # ------------------------------------------------------
       - name: Upload resultados
         uses: actions/upload-artifact@v4
@@ -101,21 +110,23 @@ jobs:
           path: resultados/
 
   # =========================================================
-  # 🧠 JOB 3: ANALYTICS + BADGES + DASHBOARD
+  # 🧠 JOB 3: PIPELINE COMPLETA
   # =========================================================
   analytics:
-    name: 🧠 Análise e Dashboard
+    name: 🧠 Pipeline Completa (Python)
     needs: benchmark
     runs-on: ubuntu-latest
 
     steps:
-      # ------------------------------------------------------
-      # 📥 Checkout
-      # ------------------------------------------------------
-      - uses: actions/checkout@v4
 
       # ------------------------------------------------------
-      # 📦 Download dos resultados
+      # 📥 Clona repositório
+      # ------------------------------------------------------
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ------------------------------------------------------
+      # 📦 Recupera resultados do benchmark
       # ------------------------------------------------------
       - name: Download resultados
         uses: actions/download-artifact@v4
@@ -124,88 +135,44 @@ jobs:
           path: resultados/
 
       # ------------------------------------------------------
-      # 🐍 Setup Python
+      # 🐍 Configura Python
       # ------------------------------------------------------
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          python-version: "3.11"
 
-      - name: Atualizar pip
-        run: python3 -m pip install --upgrade pip
-
+      # ------------------------------------------------------
+      # 📦 Instala dependências
+      # ------------------------------------------------------
       - name: Instalar dependências
-        run: pip install -r requirements.txt
-
-      # ------------------------------------------------------
-      # 📁 Preparar estrutura do dashboard
-      # ------------------------------------------------------
-      - name: Criar estrutura
         run: |
-          mkdir -p docs/resultados/historico
-          cp -r resultados/* docs/resultados/ || true
+          pip install pandas matplotlib numpy scikit-learn plotly
 
-      # ======================================================
-      # 📊 ANÁLISE
-      # ======================================================
-      - name: Gerar métricas
-        run: python scripts/generate_metrics.py
+      # ------------------------------------------------------
+      # 🚀 Executa pipeline completa
+      # ------------------------------------------------------
+      - name: Executar pipeline Algolab
+        run: python scripts/main_pipeline.py
 
-      - name: Gerar ranking
-        run: python scripts/generate_ranking.py
-
-      - name: Gerar timeline
-        run: python scripts/generate_timeline.py
-
-      - name: Gerar gráfico
-        run: python scripts/generate_graph.py
-
-      - name: Gerar boxplot
-        run: python scripts/generate_boxplot.py
-
-      # ======================================================
-      # 🚨 REGRESSÃO (FALHA O CI)
-      # ======================================================
-      - name: Verificar regressão
-        run: python scripts/check_regression.py
-
-      # ======================================================
-      # 🏷️ BADGES
-      # ======================================================
-      - name: Badge regressão
-        run: python scripts/generate_badge.py
-
-      - name: Badge melhor algoritmo
-        run: python scripts/generate_best_badge.py
-
-      - name: Badge tendência
-        run: python scripts/generate_trend_badge.py
-
-      - name: Badge qualidade
-        run: python scripts/generate_quality_badge.py
-
-      - name: Badge score
-        run: python scripts/generate_project_score_badge.py
-
-      - name: Badge maturidade
-        run: python scripts/generate_maturity_badge.py
-
-      # ======================================================
-      # 📤 COMMIT DOS RESULTADOS
-      # ======================================================
+      # ------------------------------------------------------
+      # 📤 Commit automático dos resultados
+      # ------------------------------------------------------
       - name: Commit resultados
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
 
           git pull origin main --rebase || true
-          git add docs/resultados/
-          git commit -m "chore: atualiza dashboard e badges" || true
+
+          git add docs/ graficos/ resultados/
+
+          git commit -m "🤖 atualização automática da pipeline" || echo "Sem mudanças"
           git push || true
 
-      # ======================================================
-      # 🌐 DEPLOY GITHUB PAGES
-      # ======================================================
+      # ------------------------------------------------------
+      # 🌐 Deploy no GitHub Pages
+      # ------------------------------------------------------
       - name: Deploy Pages
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4

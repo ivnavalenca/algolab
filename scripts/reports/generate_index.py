@@ -1,0 +1,184 @@
+# ============================================================
+# SCRIPT: generate_index.py
+# ============================================================
+#
+# OBJETIVO:
+# Gerar página HTML principal (dashboard) do projeto Algolab.
+#
+# FUNCIONALIDADES:
+# ✔ Exibir badges de status
+# ✔ Mostrar gráficos principais
+# ✔ Integrar gráfico interativo (Plotly)
+# ✔ Disponibilizar relatório
+#
+# SAÍDA:
+# docs/index.html
+#
+# OBS:
+# Compatível com GitHub Pages
+#
+# ============================================================
+
+import os
+
+# ============================================================
+# CONFIGURAÇÕES
+# ============================================================
+
+SAIDA = "docs/index.html"
+
+# ============================================================
+# TEMPLATE HTML
+# ============================================================
+
+def gerar_html():
+    return """
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Algolab Dashboard</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    margin: 0;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: #1e293b;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+h2 {
+    margin-bottom: 15px;
+}
+
+img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.badges img {
+    margin: 5px;
+    height: 30px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h1>🚀 Algolab Dashboard</h1>
+
+<!-- ===================================================== -->
+<!-- BADGES -->
+<!-- ===================================================== -->
+<div class="card badges">
+<h2>🏷️ Status do Projeto</h2>
+<img src="assets/badge_ci.svg">
+<img src="assets/badge_best.svg">
+<img src="assets/badge_quality.svg">
+<img src="assets/badge_trend.svg">
+<img src="assets/badge_project_score.svg">
+</div>
+
+<!-- ===================================================== -->
+<!-- GRÁFICO PRINCIPAL -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>📊 Comparação de Algoritmos</h2>
+<img src="assets/readme_chart.png">
+</div>
+
+<!-- ===================================================== -->
+<!-- EVOLUÇÃO -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>📈 Evolução do Desempenho</h2>
+<img src="../graficos/history_chart.png">
+</div>
+
+<!-- ===================================================== -->
+<!-- COMPLEXIDADE -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>🧠 Complexidade (Real vs Teórica)</h2>
+<img src="../graficos/complexity_comparison.png">
+</div>
+
+<!-- ===================================================== -->
+<!-- DISTRIBUIÇÃO -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>📦 Distribuição (Boxplot)</h2>
+<img src="../graficos/boxplot_geral.png">
+</div>
+
+<!-- ===================================================== -->
+<!-- GRÁFICO INTERATIVO -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>🧭 Gráfico Interativo</h2>
+<iframe src="assets/interactive.html" width="100%" height="500"></iframe>
+</div>
+
+<!-- ===================================================== -->
+<!-- RELATÓRIO -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>📄 Relatório Completo</h2>
+<p>
+<a href="report.md" style="color:#38bdf8; text-decoration:none;">
+👉 Acessar relatório detalhado
+</a>
+</p>
+</div>
+
+</div>
+
+</body>
+</html>
+"""
+
+# ============================================================
+# PIPELINE PRINCIPAL
+# ============================================================
+
+def main():
+
+    print("🌐 Gerando dashboard...")
+
+    html = gerar_html()
+
+    os.makedirs(os.path.dirname(SAIDA), exist_ok=True)
+
+    with open(SAIDA, "w", encoding="utf-8") as f:
+        f.write(html)
+
+    print(f"📁 Dashboard gerado em: {SAIDA}")
+    print("✅ Dashboard pronto!")
+
+# ============================================================
+# ENTRY POINT
+# ============================================================
+
+if __name__ == "__main__":
+    main()

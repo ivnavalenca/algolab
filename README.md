@@ -1,138 +1,82 @@
-# 🚀 Algolab
+# 🚀 Algolab --- Análise Experimental de Algoritmos
 
-Laboratório avançado para análise de desempenho de algoritmos com benchmarking automatizado, modelagem matemática e visualização interativa.
+[![Run
+Experiment](https://img.shields.io/badge/Run-Experiment-blue?style=for-the-badge&logo=github)](../../actions/workflows/main.yml)
 
----
+![CI](docs/assets/badge_ci.svg) ![Best](docs/assets/badge_best.svg)
+![Quality](docs/assets/badge_quality.svg)
+![Trend](docs/assets/badge_trend.svg)
+![Score](docs/assets/badge_project_score.svg)
 
-## 📊 Status
+------------------------------------------------------------------------
 
-![Score](https://img.shields.io/endpoint?url=https://ivnavalenca.github.io/algolab/resultados/badge_score.json)
-![Maturidade](https://img.shields.io/endpoint?url=https://ivnavalenca.github.io/algolab/resultados/badge_maturity.json)
-![Regressão](https://img.shields.io/endpoint?url=https://ivnavalenca.github.io/algolab/resultados/badge_regressao.json)
-![Best](https://img.shields.io/endpoint?url=https://ivnavalenca.github.io/algolab/resultados/badge_best.json)
-![Trend](https://img.shields.io/endpoint?url=https://ivnavalenca.github.io/algolab/resultados/badge_trend.json)
-![Qualidade](https://img.shields.io/endpoint?url=https://ivnavalenca.github.io/algolab/resultados/badge_quality.json)
+## 📊 Dashboard
 
----
+👉 Acesse o dashboard interativo:
 
-## 🌐 Dashboard
+➡️ https://ivnavalenca.github.io/algolab/
 
-Acesse o dashboard interativo:
+------------------------------------------------------------------------
 
-👉 https://ivnavalenca.github.io/algolab/
+## 🧠 Visão Geral
 
----
+O Algolab é uma plataforma para experimentação de algoritmos que
+automatiza todo o fluxo:
 
-## ✨ Funcionalidades
+-   execução de benchmarks\
+-   armazenamento de histórico\
+-   análise estatística\
+-   geração de gráficos\
+-   publicação automática
 
-* 🔁 Execução automatizada de benchmarks
-* 📊 Geração de gráficos científicos (log-log, regressão, erro)
-* 🧠 Estimativa de complexidade (k) e qualidade (R²)
-* 🏆 Ranking inteligente de algoritmos
-* ⚠ Detecção automática de regressão
-* 📈 Análise de tendência ao longo do tempo
-* 📦 Geração automática de relatórios (PDF)
-* 🌐 Dashboard web interativo
-* 🤖 Integração completa com CI/CD
+------------------------------------------------------------------------
 
----
+## 🔬 Metodologia
 
-## 🧠 Inteligência do Sistema
+-   Execução repetida dos algoritmos\
+-   Cálculo de média e desvio padrão\
+-   Intervalo de confiança (95%)\
+-   Regressão para estimativa de complexidade\
+-   Comparação entre execuções\
+-   Detecção automática de regressão
 
-O Algolab aplica técnicas avançadas de análise:
+------------------------------------------------------------------------
 
-* **Regressão log-log** → estimativa da complexidade computacional
-* **Coeficiente R²** → validação do modelo matemático
-* **Estatística robusta** → mediana, desvio padrão, outliers
-* **Score multi-critério** → avaliação global dos algoritmos
-* **Detecção de regressão** → identificação automática de piora de desempenho
+## ⚙️ Arquitetura
 
----
+Java → CSV → Pipeline Python → Dashboard
 
-## 📊 Exemplo de Saída
+------------------------------------------------------------------------
 
-```text
-resultados/
-├── ordenacao.csv
-├── busca.csv
-├── estruturas.csv
-├── lista03.csv
-├── graficos/
-├── historico/
-└── badges/
-```
+## 🚀 Execução Local
 
----
+### 1. Rodar benchmark (Java)
 
-## 🚀 Como Executar
-
-### ✔ Pré-requisitos
-
-* Java 21
-* Gradle
-* Python 3
-
----
-
-### ▶️ Executar benchmark
-
-```bash
 ./gradlew run
-```
 
----
+### 2. Rodar pipeline
 
-## ⚙️ CI/CD
+python scripts/main_pipeline.py
 
-O projeto utiliza GitHub Actions para:
+------------------------------------------------------------------------
 
-* Executar benchmarks automaticamente
-* Gerar métricas e gráficos
-* Detectar regressões
-* Atualizar dashboard
-* Gerar badges dinâmicos
-* Publicar resultados no GitHub Pages
+## 🏆 Funcionalidades
 
----
+-   Benchmark automatizado\
+-   Histórico versionado\
+-   Detecção de regressão\
+-   Análise de complexidade\
+-   Dashboard web\
+-   CI/CD completo
 
-## 📂 Estrutura do Projeto
+------------------------------------------------------------------------
 
-```text
-src/                # algoritmos e experimentos
-scripts/            # análise de dados e geração de métricas
-docs/               # dashboard e resultados
-.github/            # pipelines CI/CD
-```
+## 📄 Relatório
 
----
+docs/report.md
 
-## 📈 Diferenciais
+------------------------------------------------------------------------
 
-* 🔬 Abordagem científica na análise de algoritmos
-* 📊 Visualização avançada e interativa
-* 🤖 Automação completa do pipeline
-* 🧠 Inteligência na tomada de decisão
-* 📦 Projeto pronto para portfólio, pesquisa ou TCC
+## 👨‍💻 Autor
 
----
-
-## 🏆 Resultados
-
-O sistema permite:
-
-* Comparar algoritmos em diferentes cenários
-* Avaliar complexidade real vs teórica
-* Identificar regressões automaticamente
-* Monitorar evolução ao longo do tempo
-
----
-
-## 👩‍💻 Autoria
-
-Projeto desenvolvido para estudo avançado de análise de algoritmos e experimentação prática.
-
----
-
-## 📜 Licença
-
-Este projeto é de uso acadêmico e educacional.
+Ivna Valença de Oliveira

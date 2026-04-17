@@ -1,0 +1,11 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="250" height="20">
+  <rect width="120" height="20" fill="#555"/>
+  <rect x="120" width="130" height="20" fill="#4c1"/>
+  <text x="60" y="14" fill="#fff" font-size="12" text-anchor="middle">
+    Melhor Algoritmo
+  </text>
+  <text x="185" y="14" fill="#fff" font-size="12" text-anchor="middle">
+    BuscaLinear (0.13)
+  </text>
+</svg>

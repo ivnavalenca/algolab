@@ -1,5 +1,8 @@
 matplotlib
+numpy
 pandas
 reportlab
 scipy
+scikit-learn
 pytest
+plotly
