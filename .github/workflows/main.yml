@@ -205,8 +205,7 @@ jobs:
       # ------------------------------------------------------
       # 🌐 DEPLOY PAGES
       # ------------------------------------------------------
-      - name: Deploy Pages
-        if: github.ref == 'refs/heads/main'
+      - name: Deploy GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
