@@ -168,9 +168,10 @@ jobs:
       # ------------------------------------------------------
       # 📊 COPIAR GRÁFICOS PARA DOCS
       # ------------------------------------------------------
-      - name: Copiar gráficos
+      - name: Copiar gráficos para docs/resultados/graficos
         run: |
-          cp -r graficos/* docs/graficos/ || true
+          mkdir -p docs/resultados/graficos
+          cp -r resultados/graficos/* docs/resultados/graficos/ || true
 
       # ------------------------------------------------------
       # 🏷️ COPIAR BADGES
