@@ -1,71 +1,96 @@
 # ============================================================
-# SCRIPT: plot_complexity_comparison.py
+# MÓDULO: plot_complexity_comparison
+# ============================================================
+#
+# OBJETIVO:
+# Comparar desempenho real dos algoritmos com suas
+# complexidades teóricas.
+#
+# DESCRIÇÃO:
+# Este gráfico permite visualizar se os resultados empíricos
+# seguem o comportamento esperado das funções:
+#
+# ✔ O(n)
+# ✔ O(n log n)
+# ✔ O(n²)
+#
+# USO:
+# ✔ análise acadêmica
+# ✔ validação experimental
+# ✔ apoio em apresentação / banca
+#
+# ENTRADAS:
+# - x: lista de tamanhos de entrada
+# - series_real: dicionário com dados reais:
+#     {
+#         "Algoritmo A": [valores],
+#         "Algoritmo B": [valores]
+#     }
+#
+# SAÍDA:
+# - docs/resultados/graficos/complexity_comparison.png
+#
 # ============================================================
 
-import os
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-PASTA = "resultados/historico"
-SAIDA = "graficos/complexity_comparison.png"
+from .plot_utils import *
 
-def listar_csvs():
-    if not os.path.exists(PASTA):
-        return []
-    return [os.path.join(PASTA, f) for f in os.listdir(PASTA) if f.endswith(".csv")]
 
-def carregar():
-    dfs = []
-    for arq in listar_csvs():
-        try:
-            df = pd.read_csv(arq)
-            if not df.empty:
-                dfs.append(df)
-        except:
-            pass
-    return pd.concat(dfs, ignore_index=True) if dfs else None
+# ============================================================
+# FUNÇÃO PRINCIPAL
+# ============================================================
+def gerar_complexity_comparison(x, series_real):
+    """
+    Gera gráfico comparando dados reais com curvas teóricas.
 
-def plot(df):
-    plt.figure(figsize=(10,6))
+    Parâmetros:
+    - x: lista de tamanhos
+    - series_real: dados reais dos algoritmos
+    """
 
-    for alg in df["algoritmo"].unique():
-        dados = df[df["algoritmo"] == alg]
-        grupo = dados.groupby("tamanho")["tempo"].mean().reset_index()
+    # --------------------------------------------------------
+    # PREPARAÇÃO
+    # --------------------------------------------------------
+    setup_output_dir()
+    new_figure()
 
-        n = grupo["tamanho"].values
-        t = grupo["tempo"].values
+    x_np = np.array(x)
 
-        # normalização
-        t_norm = t / max(t)
+    # --------------------------------------------------------
+    # CURVAS TEÓRICAS NORMALIZADAS
+    # --------------------------------------------------------
+    n = x_np
+    n_log_n = x_np * np.log2(x_np + 1)
+    n2 = x_np ** 2
 
-        # curvas teóricas
-        linear = n / max(n)
-        nlogn = (n * np.log2(n)) / max(n * np.log2(n))
-        quadratic = (n**2) / max(n**2)
+    # normalização para escala visual comparável
+    def normalizar(y):
+        return y / max(y)
 
-        plt.plot(n, t_norm, marker='o', label=f"{alg} (real)")
+    plt.plot(x, normalizar(n), linestyle="--", label="O(n)")
+    plt.plot(x, normalizar(n_log_n), linestyle="--", label="O(n log n)")
+    plt.plot(x, normalizar(n2), linestyle="--", label="O(n²)")
 
-        plt.plot(n, linear, '--', alpha=0.4)
-        plt.plot(n, nlogn, '--', alpha=0.4)
-        plt.plot(n, quadratic, '--', alpha=0.4)
+    # --------------------------------------------------------
+    # DADOS REAIS (NORMALIZADOS)
+    # --------------------------------------------------------
+    for nome, valores in series_real.items():
+        valores_np = np.array(valores)
+        plt.plot(x, normalizar(valores_np), linewidth=2, label=nome)
 
-    plt.title("Comparação: Complexidade Real vs Teórica")
-    plt.xlabel("n")
-    plt.ylabel("Tempo normalizado")
-    plt.legend()
+    # --------------------------------------------------------
+    # FINALIZAÇÃO
+    # --------------------------------------------------------
+    finalize_plot(
+        titulo="Comparação: Teórico vs Empírico",
+        xlabel="Tamanho da Entrada",
+        ylabel="Escala Normalizada",
+        legenda=True
+    )
 
-    os.makedirs("graficos", exist_ok=True)
-    plt.savefig(SAIDA)
-
-    print(f"📊 {SAIDA}")
-
-def main():
-    df = carregar()
-    if df is None:
-        print("❌ Sem dados")
-        return
-    plot(df)
-
-if __name__ == "__main__":
-    main()
+    # --------------------------------------------------------
+    # EXPORTAÇÃO
+    # --------------------------------------------------------
+    save_plot("complexity_comparison.png")

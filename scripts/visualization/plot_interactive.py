@@ -1,49 +1,86 @@
 # ============================================================
-# SCRIPT: plot_interactive.py
+# MÓDULO: plot_interactive
+# ============================================================
+#
+# OBJETIVO:
+# Gerar gráfico interativo utilizando Plotly.
+#
+# DESCRIÇÃO:
+# Permite:
+# ✔ zoom
+# ✔ hover (detalhes)
+# ✔ ativar/desativar algoritmos
+#
+# USO:
+# ✔ análise exploratória
+# ✔ apresentação interativa
+#
+# SAÍDA:
+# - docs/resultados/graficos/interactive_chart.html
+#
+# OBS:
+# Este arquivo NÃO é exibido diretamente no GitHub Pages.
+#
 # ============================================================
 
 import os
-import pandas as pd
-import plotly.express as px
+import plotly.graph_objects as go
 
-PASTA = "resultados/historico"
-SAIDA = "docs/assets/interactive.html"
+# ============================================================
+# DIRETÓRIO DE SAÍDA
+# ============================================================
 
-def listar():
-    if not os.path.exists(PASTA):
-        return []
-    return [os.path.join(PASTA, f) for f in os.listdir(PASTA) if f.endswith(".csv")]
+BASE_DIR = "docs/resultados/graficos"
 
-def carregar():
-    dfs = []
-    for arq in listar():
-        try:
-            df = pd.read_csv(arq)
-            if not df.empty:
-                dfs.append(df)
-        except:
-            pass
-    return pd.concat(dfs, ignore_index=True) if dfs else None
 
-def main():
+# ============================================================
+# FUNÇÃO PRINCIPAL
+# ============================================================
+def gerar_interactive_chart(x, series):
+    """
+    Gera gráfico interativo com Plotly.
 
-    df = carregar()
-    if df is None:
-        print("❌ Sem dados")
-        return
+    Parâmetros:
+    - x: lista de tamanhos
+    - series: dicionário com dados dos algoritmos
+    """
 
-    fig = px.line(
-        df,
-        x="tamanho",
-        y="tempo",
-        color="algoritmo",
-        title="Comparação Interativa"
+    # --------------------------------------------------------
+    # GARANTIR DIRETÓRIO
+    # --------------------------------------------------------
+    os.makedirs(BASE_DIR, exist_ok=True)
+
+    # --------------------------------------------------------
+    # CRIAR FIGURA
+    # --------------------------------------------------------
+    fig = go.Figure()
+
+    # --------------------------------------------------------
+    # ADICIONAR SÉRIES
+    # --------------------------------------------------------
+    for nome, valores in series.items():
+        fig.add_trace(go.Scatter(
+            x=x,
+            y=valores,
+            mode='lines+markers',
+            name=nome
+        ))
+
+    # --------------------------------------------------------
+    # LAYOUT
+    # --------------------------------------------------------
+    fig.update_layout(
+        title="Comparação Interativa de Algoritmos",
+        xaxis_title="Tamanho da Entrada",
+        yaxis_title="Tempo",
+        template="plotly_white"
     )
 
-    os.makedirs("docs/assets", exist_ok=True)
-    fig.write_html(SAIDA)
+    # --------------------------------------------------------
+    # EXPORTAÇÃO
+    # --------------------------------------------------------
+    caminho = f"{BASE_DIR}/interactive_chart.html"
 
-    print(f"🌐 {SAIDA}")
+    fig.write_html(caminho)
 
-if __name__ == "__main__":
-    main()
+    print(f"📊 gráfico interativo salvo em: {caminho}")

@@ -1,18 +1,18 @@
 # ============================================================
-# MÓDULO: plot_readme_chart
+# MÓDULO: comparison_chart
 # ============================================================
 #
 # OBJETIVO:
-# Gerar gráfico simplificado para exibição no README do projeto.
+# Gerar gráfico comparativo detalhado entre algoritmos.
 #
 # DESCRIÇÃO:
-# Este gráfico serve como uma visão rápida do desempenho geral
-# dos algoritmos, sendo exibido diretamente no README.md.
+# Similar ao line_chart, mas com foco em comparação direta
+# entre algoritmos em um mesmo cenário.
 #
-# CARACTERÍSTICAS:
-# ✔ Visual limpo e direto
-# ✔ Pouca informação (alta legibilidade)
-# ✔ Foco em comparação geral
+# DIFERENCIAL:
+# ✔ foco em análise comparativa
+# ✔ visual mais direto
+# ✔ ideal para dashboard
 #
 # ENTRADAS:
 # - x: lista de tamanhos de entrada
@@ -23,67 +23,50 @@
 #     }
 #
 # SAÍDA:
-# - docs/assets/readme_chart.png
+# - Arquivo PNG salvo em:
+#   docs/resultados/graficos/comparison_chart.png
 #
 # ============================================================
 
-import os
 import matplotlib.pyplot as plt
-
-from .plot_utils import new_figure, finalize_plot
-
-# ============================================================
-# DIRETÓRIO DE SAÍDA (README)
-# ============================================================
-
-ASSETS_DIR = "docs/assets"
+from .plot_utils import *
 
 
 # ============================================================
 # FUNÇÃO PRINCIPAL
 # ============================================================
-def gerar_readme_chart(x, series):
+def gerar_comparison_chart(x, series):
     """
-    Gera gráfico simplificado para o README.
+    Gera gráfico comparativo entre algoritmos.
 
     Parâmetros:
-    - x: lista de tamanhos
-    - series: dicionário com dados dos algoritmos
+    - x: valores do eixo X (ex: tamanhos)
+    - series: dicionário com tempos por algoritmo
     """
-
-    # --------------------------------------------------------
-    # GARANTIR DIRETÓRIO
-    # --------------------------------------------------------
-    os.makedirs(ASSETS_DIR, exist_ok=True)
 
     # --------------------------------------------------------
     # PREPARAÇÃO
     # --------------------------------------------------------
+    setup_output_dir()
     new_figure()
 
     # --------------------------------------------------------
-    # PLOT SIMPLIFICADO
+    # PLOT DAS SÉRIES
     # --------------------------------------------------------
     for nome_algoritmo, valores in series.items():
         plt.plot(x, valores, linewidth=2, label=nome_algoritmo)
 
     # --------------------------------------------------------
-    # FINALIZAÇÃO (MINIMALISTA)
+    # FINALIZAÇÃO
     # --------------------------------------------------------
     finalize_plot(
-        titulo="Comparação de Algoritmos",
+        titulo="Comparação Detalhada de Algoritmos",
         xlabel="Tamanho da Entrada",
-        ylabel="Tempo",
+        ylabel="Tempo de Execução (ns)",
         legenda=True
     )
 
     # --------------------------------------------------------
     # EXPORTAÇÃO
     # --------------------------------------------------------
-    caminho = f"{ASSETS_DIR}/readme_chart.png"
-
-    plt.tight_layout()
-    plt.savefig(caminho)
-    plt.close()
-
-    print(f"📊 README chart salvo em: {caminho}")
+    save_plot("comparison_chart.png")

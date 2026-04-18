@@ -1,94 +1,157 @@
 # ============================================================
-# SCRIPT: main_pipeline.py
+# PIPELINE: main_pipeline
 # ============================================================
 #
 # OBJETIVO:
-# Executar toda a pipeline do projeto Algolab de forma
-# automatizada.
+# Executar toda a pipeline de análise de algoritmos:
 #
-# ETAPAS:
-# ✔ Atualização do histórico
-# ✔ Análise de dados
-# ✔ Geração de gráficos
-# ✔ Geração de badges
-# ✔ Geração de relatórios
+# ✔ Carregar resultados experimentais (CSV)
+# ✔ Processar dados
+# ✔ Atualizar histórico (timeline)
+# ✔ Gerar gráficos
 #
-# USO:
-# python scripts/main_pipeline.py
+# SAÍDAS:
+# ✔ docs/resultados/graficos/*.png
+# ✔ docs/assets/readme_chart.png
+# ✔ docs/resultados/timeline.csv
 #
 # ============================================================
 
-import subprocess
-import sys
+import pandas as pd
 
 # ============================================================
-# EXECUTOR DE SCRIPTS
+# IMPORTS - VISUALIZAÇÃO
 # ============================================================
 
-def run(script):
+from scripts.visualization import (
+    gerar_line_chart,
+    gerar_boxplot,
+    gerar_comparison_chart,
+    gerar_history_chart
+)
+
+from scripts.visualization.plot_readme_chart import gerar_readme_chart
+from scripts.visualization.plot_complexity_comparison import gerar_complexity_comparison
+
+# ============================================================
+# IMPORTS - TIMELINE
+# ============================================================
+
+from scripts.generate_timeline import (
+    atualizar_timeline,
+    preparar_dados_timeline
+)
+
+# ============================================================
+# CONFIGURAÇÃO
+# ============================================================
+
+ARQUIVO_RESULTADOS = "resultados/latest.csv"
+
+
+# ============================================================
+# CARREGAR DADOS
+# ============================================================
+def carregar_dados():
     """
-    Executa um script Python e exibe status.
+    Carrega os dados do CSV de resultados.
     """
-    print(f"\n🚀 Executando: {script}")
 
-    try:
-        subprocess.run([sys.executable, script], check=True)
-    except subprocess.CalledProcessError:
-        print(f"❌ Erro ao executar: {script}")
+    print("📥 Carregando dados...")
+
+    df = pd.read_csv(ARQUIVO_RESULTADOS)
+
+    print(f"✔ {len(df)} registros carregados")
+
+    return df
+
 
 # ============================================================
-# PIPELINE PRINCIPAL
+# PREPARAR DADOS PARA GRÁFICOS DE LINHA
 # ============================================================
+def preparar_series(df):
+    """
+    Organiza os dados para gráficos de linha e comparação.
+    """
 
+    tamanhos = sorted(df["n"].unique())
+    algoritmos = df["algoritmo"].unique()
+
+    series = {}
+
+    for alg in algoritmos:
+        dados_alg = df[df["algoritmo"] == alg]
+        medias = dados_alg.groupby("n")["tempo"].mean()
+
+        series[alg] = [medias.get(n, 0) for n in tamanhos]
+
+    return tamanhos, series
+
+
+# ============================================================
+# PREPARAR DADOS PARA BOXPLOT
+# ============================================================
+def preparar_boxplot(df):
+    """
+    Organiza os dados para boxplot.
+    """
+
+    algoritmos = df["algoritmo"].unique()
+
+    data = {}
+
+    for alg in algoritmos:
+        data[alg] = df[df["algoritmo"] == alg]["tempo"].tolist()
+
+    return data
+
+
+# ============================================================
+# EXECUÇÃO PRINCIPAL
+# ============================================================
 def main():
+    print("🚀 Iniciando pipeline AlgoLab...\n")
 
-    print("🔬 Iniciando pipeline Algolab...")
+    # --------------------------------------------------------
+    # 1. CARREGAR DADOS
+    # --------------------------------------------------------
+    df = carregar_dados()
 
-    # ========================================================
-    # 1. HISTÓRICO (opcional)
-    # ========================================================
-    run("scripts/pipeline/update_history.py")
+    # --------------------------------------------------------
+    # 2. PREPARAR DADOS
+    # --------------------------------------------------------
+    print("🧠 Preparando dados...")
 
-    # ========================================================
-    # 2. ANÁLISE
-    # ========================================================
-    run("scripts/analysis/compute_metrics.py")
-    run("scripts/analysis/compare_runs.py")
-    run("scripts/analysis/analyze_regression.py")
-    run("scripts/analysis/compute_ranking.py")
+    x, series = preparar_series(df)
+    box_data = preparar_boxplot(df)
 
-    # ========================================================
-    # 3. VISUALIZAÇÃO
-    # ========================================================
-    run("scripts/visualization/plot_boxplot.py")
-    run("scripts/visualization/plot_line_chart.py")
-    run("scripts/visualization/plot_comparison_chart.py")
-    run("scripts/visualization/plot_history_chart.py")
-    run("scripts/visualization/plot_readme_chart.py")
+    # --------------------------------------------------------
+    # 3. TIMELINE (HISTÓRICO)
+    # --------------------------------------------------------
+    print("📈 Atualizando timeline...")
 
-    # 🧠 NOVO: comparação teórica vs real
-    run("scripts/visualization/plot_complexity_comparison.py")
+    timeline_df = atualizar_timeline(df)
+    x_hist, y_hist = preparar_dados_timeline(timeline_df)
 
-    # ========================================================
-    # 4. BADGES
-    # ========================================================
-    run("scripts/badges/generate_summary_badge.py")
-    run("scripts/badges/generate_best_badge.py")
-    run("scripts/badges/generate_quality_badge.py")
-    run("scripts/badges/generate_trend_badge.py")
-    run("scripts/badges/generate_project_score_badge.py")
+    # --------------------------------------------------------
+    # 4. GERAR GRÁFICOS
+    # --------------------------------------------------------
+    print("📊 Gerando gráficos...\n")
 
-    # ========================================================
-    # 5. RELATÓRIOS
-    # ========================================================
-    run("scripts/reports/generate_report.py")
-    run("scripts/reports/generate_index.py")
+    gerar_line_chart(x, series)
+    gerar_comparison_chart(x, series)
+    gerar_boxplot(box_data)
+    gerar_history_chart(x_hist, y_hist)
 
-    print("\n🎉 Pipeline concluída com sucesso!")
+    # gráficos extras (diferencial do projeto)
+    gerar_readme_chart(x, series)
+    gerar_complexity_comparison(x, series)
+
+    print("\n✅ Pipeline finalizada com sucesso!")
+
 
 # ============================================================
-# ENTRY POINT
+# ENTRYPOINT
 # ============================================================
-
 if __name__ == "__main__":
     main()

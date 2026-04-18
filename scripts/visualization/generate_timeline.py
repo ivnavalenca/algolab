@@ -1,130 +1,103 @@
 # ============================================================
-# 📈 TIMELINE HISTÓRICA DE DESEMPENHO
+# MÓDULO: generate_timeline
 # ============================================================
 #
-# RESPONSABILIDADES:
-# - Ler todos os CSVs históricos
-# - Extrair data de cada execução
-# - Agrupar dados por algoritmo
-# - Calcular tempo médio por execução
-# - Gerar JSON para visualização temporal
+# OBJETIVO:
+# Manter histórico de execuções do pipeline AlgoLab.
+#
+# DESCRIÇÃO:
+# A cada execução:
+# ✔ lê resultados atuais
+# ✔ calcula métricas (tempo médio)
+# ✔ adiciona ao histórico
+#
+# SAÍDA:
+# - docs/resultados/timeline.csv
+#
+# USO:
+# ✔ alimentar history_chart
+# ✔ acompanhar evolução do projeto
 #
 # ============================================================
 
 import os
-import json
-import csv
+import pandas as pd
+from datetime import datetime
 
 # ============================================================
-# 📁 CONFIGURAÇÕES
+# CONFIGURAÇÃO
 # ============================================================
-PASTA = "resultados/historico"
-SAIDA = "docs/resultados/ordenacao_timeline.json"
+
+TIMELINE_PATH = "docs/resultados/timeline.csv"
+
 
 # ============================================================
-# 📂 LISTAR CSVs
+# GARANTIR DIRETÓRIO
 # ============================================================
-def listar_csvs():
-    """
-    Retorna lista ordenada de arquivos CSV.
-    """
-    return sorted([
-        f for f in os.listdir(PASTA)
-        if f.endswith(".csv")
-    ])
+def garantir_diretorio():
+    os.makedirs("docs/resultados", exist_ok=True)
+
 
 # ============================================================
-# 📅 EXTRAIR DATA DO NOME DO ARQUIVO
-# ============================================================
-def extrair_data(nome):
-    """
-    Extrai data do nome do arquivo.
-
-    Exemplo:
-    lista03_2026-04-16.csv → 2026-04-16
-    """
-    return nome.replace(".csv", "").split("_")[-1]
-
-# ============================================================
-# 📊 CARREGAR HISTÓRICO
+# CARREGAR TIMELINE EXISTENTE
 # ============================================================
 def carregar_timeline():
-    """
-    Constrói timeline por algoritmo.
+    if os.path.exists(TIMELINE_PATH):
+        return pd.read_csv(TIMELINE_PATH)
+    else:
+        return pd.DataFrame(columns=[
+            "timestamp",
+            "tempo_medio"
+        ])
 
-    Retorno:
-    {
-        algoritmo: [
-            { data, tempo },
-            ...
-        ]
+
+# ============================================================
+# CALCULAR MÉTRICA ATUAL
+# ============================================================
+def calcular_tempo_medio(df):
+    """
+    Calcula tempo médio global dos algoritmos.
+    """
+    return df["tempo"].mean()
+
+
+# ============================================================
+# ATUALIZAR TIMELINE
+# ============================================================
+def atualizar_timeline(df_resultados):
+    """
+    Atualiza o histórico com a execução atual.
+    """
+
+    garantir_diretorio()
+
+    timeline = carregar_timeline()
+
+    tempo_medio = calcular_tempo_medio(df_resultados)
+
+    nova_linha = {
+        "timestamp": datetime.now().isoformat(),
+        "tempo_medio": tempo_medio
     }
-    """
 
-    arquivos = listar_csvs()
+    timeline = pd.concat([timeline, pd.DataFrame([nova_linha])], ignore_index=True)
 
-    timeline = {}
+    timeline.to_csv(TIMELINE_PATH, index=False)
 
-    for arquivo in arquivos:
-
-        data = extrair_data(arquivo)
-
-        caminho = os.path.join(PASTA, arquivo)
-
-        with open(caminho) as f:
-
-            reader = csv.DictReader(f)
-
-            # agrupa tempos por algoritmo nessa execução
-            temp_execucao = {}
-
-            for row in reader:
-
-                algoritmo = row["algoritmo"]
-
-                # usa mediana (mais robusto)
-                tempo = float(row.get("mediana", row.get("tempo", 0)))
-
-                if algoritmo not in temp_execucao:
-                    temp_execucao[algoritmo] = []
-
-                temp_execucao[algoritmo].append(tempo)
-
-            # calcula média por algoritmo na execução
-            for algoritmo in temp_execucao:
-
-                media = sum(temp_execucao[algoritmo]) / len(temp_execucao[algoritmo])
-
-                if algoritmo not in timeline:
-                    timeline[algoritmo] = []
-
-                timeline[algoritmo].append({
-                    "data": data,
-                    "tempo": media
-                })
+    print(f"📈 timeline atualizada: {TIMELINE_PATH}")
 
     return timeline
 
+
 # ============================================================
-# 📊 GERAR JSON
+# PREPARAR DADOS PARA GRÁFICO
 # ============================================================
-def gerar_timeline():
+def preparar_dados_timeline(timeline_df):
     """
-    Gera arquivo JSON com timeline histórica.
+    Converte timeline em dados para gráfico.
     """
 
-    dados = carregar_timeline()
+    x = list(range(1, len(timeline_df) + 1))
+    y = timeline_df["tempo_medio"].tolist()
 
-    os.makedirs("docs/resultados", exist_ok=True)
-
-    with open(SAIDA, "w") as f:
-        json.dump(dados, f, indent=2)
-
-    print("Timeline gerada em:", SAIDA)
-
-
-# ============================================================
-# 🚀 EXECUÇÃO
-# ============================================================
-if __name__ == "__main__":
-    gerar_timeline()
+    return x, y
