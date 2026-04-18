@@ -171,7 +171,14 @@ jobs:
       - name: Copiar gráficos para docs/resultados/graficos
         run: |
           mkdir -p docs/resultados/graficos
-          cp -r resultados/graficos/* docs/resultados/graficos/ || true
+
+          echo "DEBUG origem:"
+          ls -la graficos || true
+
+          cp -r graficos/* docs/resultados/graficos/ || true
+
+          echo "DEBUG destino:"
+          ls -la docs/resultados/graficos || true
 
       # ------------------------------------------------------
       # 🏷️ COPIAR BADGES
