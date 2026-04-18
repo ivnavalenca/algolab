@@ -60,6 +60,7 @@ body {
     grid-template-columns: 1fr 1fr;
   }
 }
+<<<<<<< HEAD
 
 /* GRÁFICOS */
 img {
@@ -104,3 +105,5 @@ body.dark .tabs button {
   color: #e6edf3;
   border: 1px solid #30363d;
 }
+=======
+>>>>>>> bfdc8f40cccb6736ed588fd58d05e5c8382182ed
