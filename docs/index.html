@@ -1,77 +1,124 @@
+
 <!DOCTYPE html>
-<html lang="pt-br">
-
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Algolab Dashboard</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+<meta charset="UTF-8">
+<title>Algolab Dashboard</title>
 
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    margin: 0;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: #1e293b;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+h2 {
+    margin-bottom: 15px;
+}
+
+img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.badges img {
+    margin: 5px;
+    height: 30px;
+}
+</style>
+
+</head>
 <body>
 
-<header class="topbar">
-    <h1>Algolab</h1>
-    <p>Análise de Algoritmos</p>
-</header>
+<div class="container">
 
-<main class="container">
+<h1>🚀 Algolab Dashboard</h1>
 
-    <!-- STATUS -->
-    <section>
-        <h2>Status do Projeto</h2>
+<!-- ===================================================== -->
+<!-- BADGES -->
+<!-- ===================================================== -->
+<div class="card badges">
+<h2>🏷️ Status do Projeto</h2>
+<img src="assets/badge_ci.svg">
+<img src="assets/badge_best.svg">
+<img src="assets/badge_quality.svg">
+<img src="assets/badge_trend.svg">
+<img src="assets/badge_project_score.svg">
+</div>
 
-        <div class="badges">
-            <img src="assets/badge_summary.svg">
-            <img src="assets/badge_best.svg">
-            <img src="assets/badge_quality.svg">
-            <img src="assets/badge_trend.svg">
-            <img src="assets/badge_project_score.svg">
-        </div>
-    </section>
+<!-- ===================================================== -->
+<!-- GRÁFICO PRINCIPAL -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>📊 Comparação de Algoritmos</h2>
+<img src="assets/readme_chart.png">
+</div>
 
-    <!-- GRÁFICOS PRINCIPAIS -->
-    <section>
-        <h2>Comparação de Algoritmos</h2>
+<!-- ===================================================== -->
+<!-- EVOLUÇÃO -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>📈 Evolução do Desempenho</h2>
+<img src="../graficos/history_chart.png">
+</div>
 
-        <div class="grid">
+<!-- ===================================================== -->
+<!-- COMPLEXIDADE -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>🧠 Complexidade (Real vs Teórica)</h2>
+<img src="../graficos/complexity_comparison.png">
+</div>
 
-            <div class="card">
-                <img src="graficos/line_chart.png">
-                <p>Comparação geral de desempenho</p>
-            </div>
+<!-- ===================================================== -->
+<!-- DISTRIBUIÇÃO -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>📦 Distribuição (Boxplot)</h2>
+<img src="../graficos/boxplot_geral.png">
+</div>
 
-            <div class="card">
-                <img src="graficos/comparison_chart.png">
-                <p>Comparação detalhada entre algoritmos</p>
-            </div>
+<!-- ===================================================== -->
+<!-- GRÁFICO INTERATIVO -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>🧭 Gráfico Interativo</h2>
+<iframe src="assets/interactive.html" width="100%" height="500"></iframe>
+</div>
 
-        </div>
-    </section>
+<!-- ===================================================== -->
+<!-- RELATÓRIO -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>📄 Relatório Completo</h2>
+<p>
+<a href="report.md" style="color:#38bdf8; text-decoration:none;">
+👉 Acessar relatório detalhado
+</a>
+</p>
+</div>
 
-    <!-- DISTRIBUIÇÃO -->
-    <section>
-        <h2>Distribuição dos Resultados</h2>
-
-        <div class="grid">
-
-            <div class="card">
-                <img src="graficos/boxplot_geral.png">
-                <p>Distribuição estatística (boxplot)</p>
-            </div>
-
-            <div class="card">
-                <img src="assets/history_chart.png">
-                <p>Evolução histórica dos resultados</p>
-            </div>
-
-        </div>
-    </section>
-
-</main>
-
-<footer>
-    <p>Dashboard gerado automaticamente • Algolab</p>
-</footer>
+</div>
 
 </body>
 </html>
