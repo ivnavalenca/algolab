@@ -1,0 +1,11 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="20">
+  <rect width="110" height="20" fill="#555"/>
+  <rect x="110" width="90" height="20" fill="#f39c12"/>
+  <text x="55" y="14" fill="#fff" font-size="12" text-anchor="middle">
+    Qualidade
+  </text>
+  <text x="155" y="14" fill="#fff" font-size="12" text-anchor="middle">
+    Aceitável
+  </text>
+</svg>

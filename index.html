@@ -1,98 +1,124 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-  <meta charset="UTF-8">
-  <title>Algolab Dashboard</title>
+<meta charset="UTF-8">
+<title>Algolab Dashboard</title>
 
-  <!-- ===================================================== -->
-  <!-- 🎨 ESTILO -->
-  <!-- ===================================================== -->
-  <link rel="stylesheet" href="style.css">
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    margin: 0;
+}
 
-  <!-- ===================================================== -->
-  <!-- 📊 CHART -->
-  <!-- ===================================================== -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: #1e293b;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+h2 {
+    margin-bottom: 15px;
+}
+
+img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.badges img {
+    margin: 5px;
+    height: 30px;
+}
+</style>
+
 </head>
-
 <body>
 
 <div class="container">
 
-  <!-- ===================================================== -->
-  <!-- 🚀 HEADER -->
-  <!-- ===================================================== -->
-  <h1>🚀 Algolab Dashboard</h1>
+<h1>🚀 Algolab Dashboard</h1>
 
-  <!-- ===================================================== -->
-  <!-- 🏷️ BADGES -->
-  <!-- ===================================================== -->
-  <div class="card">
-    <h2>📊 Status do Projeto</h2>
-    <div id="badges"></div>
-  </div>
-
-  <!-- ===================================================== -->
-  <!-- 🎯 FILTRO -->
-  <!-- ===================================================== -->
-  <div class="card">
-    <h2>🎯 Selecionar Cenário</h2>
-
-    <select id="cenarioSelect">
-      <option value="ordenacao">Ordenação</option>
-      <option value="busca">Busca</option>
-      <option value="estruturas">Estruturas</option>
-      <option value="lista03">Lista03</option>
-    </select>
-  </div>
-
-  <!-- ===================================================== -->
-  <!-- 📊 GRÁFICO PRINCIPAL -->
-  <!-- ===================================================== -->
-  <div class="card fade show" id="graficoContainer">
-    <h2>📊 Desempenho</h2>
-    <img id="grafico">
-  </div>
-
-  <!-- ===================================================== -->
-  <!-- 📊 BOXPLOT -->
-  <!-- ===================================================== -->
-  <div class="card fade show" id="boxplotContainer">
-    <h2>📊 Distribuição (Boxplot)</h2>
-    <img id="boxplot">
-  </div>
-
-  <!-- ===================================================== -->
-  <!-- 📈 MÉTRICAS -->
-  <!-- ===================================================== -->
-  <div class="card fade show">
-    <h2>📈 Complexidade (k e R²)</h2>
-    <table id="metrics"></table>
-  </div>
-
-  <!-- ===================================================== -->
-  <!-- 🏆 RANKING -->
-  <!-- ===================================================== -->
-  <div class="card fade show">
-    <h2>🏆 Ranking Inteligente</h2>
-    <div id="ranking"></div>
-  </div>
-
-  <!-- ===================================================== -->
-  <!-- 📈 TIMELINE -->
-  <!-- ===================================================== -->
-  <div class="card fade show">
-    <h2>📈 Evolução Histórica</h2>
-    <canvas id="timeline"></canvas>
-  </div>
-
+<!-- ===================================================== -->
+<!-- BADGES -->
+<!-- ===================================================== -->
+<div class="card badges">
+<h2>🏷️ Status do Projeto</h2>
+<img src="assets/badge_ci.svg">
+<img src="assets/badge_best.svg">
+<img src="assets/badge_quality.svg">
+<img src="assets/badge_trend.svg">
+<img src="assets/badge_project_score.svg">
 </div>
 
 <!-- ===================================================== -->
-<!-- 🚀 SCRIPT -->
+<!-- GRÁFICO PRINCIPAL -->
 <!-- ===================================================== -->
-<script src="script.js"></script>
+<div class="card">
+<h2>📊 Comparação de Algoritmos</h2>
+<img src="assets/readme_chart.png">
+</div>
+
+<!-- ===================================================== -->
+<!-- EVOLUÇÃO -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>📈 Evolução do Desempenho</h2>
+<img src="../graficos/history_chart.png">
+</div>
+
+<!-- ===================================================== -->
+<!-- COMPLEXIDADE -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>🧠 Complexidade (Real vs Teórica)</h2>
+<img src="../graficos/complexity_comparison.png">
+</div>
+
+<!-- ===================================================== -->
+<!-- DISTRIBUIÇÃO -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>📦 Distribuição (Boxplot)</h2>
+<img src="../graficos/boxplot_geral.png">
+</div>
+
+<!-- ===================================================== -->
+<!-- GRÁFICO INTERATIVO -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>🧭 Gráfico Interativo</h2>
+<iframe src="assets/interactive.html" width="100%" height="500"></iframe>
+</div>
+
+<!-- ===================================================== -->
+<!-- RELATÓRIO -->
+<!-- ===================================================== -->
+<div class="card">
+<h2>📄 Relatório Completo</h2>
+<p>
+<a href="report.md" style="color:#38bdf8; text-decoration:none;">
+👉 Acessar relatório detalhado
+</a>
+</p>
+</div>
+
+</div>
 
 </body>
 </html>

@@ -1,215 +1,83 @@
-/*
- * ============================================================
- * 🚀 ALGOLAB DASHBOARD - ESTILO COMPLETO
- * ============================================================
- *
- * OBJETIVO:
- * - Layout limpo e moderno
- * - Organização em cards
- * - Destaque visual de dados importantes
- * - Suporte a animações
- * - Experiência profissional
- *
- * ============================================================
- */
+/* ============================================================
+   ALGOLAB DASHBOARD - NOVO DESIGN
+============================================================ */
 
-/*
- * ============================================================
- * 🌐 BASE
- * ============================================================
- */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f7fa;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
     margin: 0;
-    padding: 20px;
-    color: #333;
+    background: #f1f5f9;
+    color: #0f172a;
 }
 
-/*
- * ============================================================
- * 📦 CONTAINER
- * ============================================================
- */
+/* TOPO */
+.topbar {
+    background: white;
+    padding: 20px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: center;
+}
+
+.topbar h1 {
+    margin: 0;
+    color: #2563eb;
+}
+
+.topbar p {
+    margin: 5px 0 0;
+    color: #64748b;
+}
+
+/* CONTAINER */
 .container {
     max-width: 1100px;
     margin: auto;
+    padding: 20px;
 }
 
-/*
- * ============================================================
- * 🏷️ TÍTULOS
- * ============================================================
- */
-h1 {
-    text-align: center;
-    margin-bottom: 10px;
+/* SEÇÕES */
+section {
+    margin-bottom: 40px;
 }
 
 h2 {
-    text-align: center;
-    margin-bottom: 10px;
-    color: #444;
+    margin-bottom: 15px;
 }
 
-h3 {
-    margin-top: 20px;
-    color: #555;
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
 }
 
-/*
- * ============================================================
- * 🧱 CARDS
- * ============================================================
- */
+/* CARD */
 .card {
     background: white;
+    border-radius: 10px;
     padding: 15px;
-    margin: 20px 0;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    border: 1px solid #e2e8f0;
+    transition: 0.2s;
 }
 
-/*
- * ============================================================
- * 🎯 CONTROLES
- * ============================================================
- */
-select {
-    padding: 8px;
-    margin: 5px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+.card:hover {
+    transform: translateY(-3px);
 }
 
-/*
- * ============================================================
- * 📊 IMAGENS E GRÁFICOS
- * ============================================================
- */
-img {
-    max-width: 100%;
-    border-radius: 8px;
-    margin-top: 10px;
-}
-
-/*
- * ============================================================
- * 📈 CANVAS (TIMELINE)
- * ============================================================
- */
-canvas {
-    max-width: 100%;
-    background: white;
-    border-radius: 10px;
-    padding: 10px;
-}
-
-/*
- * ============================================================
- * 📊 TABELAS (MÉTRICAS)
- * ============================================================
- */
-table {
+.card img {
     width: 100%;
-    border-collapse: collapse;
+    border-radius: 8px;
 }
 
-td, th {
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-    text-align: center;
-}
-
-/*
- * ============================================================
- * 🏆 RANKING
- * ============================================================
- */
-.ranking-item {
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 6px;
-    background: #eee;
-    transition: transform 0.2s ease;
-}
-
-.ranking-item:hover {
-    transform: scale(1.02);
-}
-
-/*
- * ============================================================
- * 🎯 STATUS VISUAL
- * ============================================================
- */
-.ok {
-    border-left: 5px solid green;
-}
-
-.regressao {
-    border-left: 5px solid red;
-}
-
-.instavel {
-    border-left: 5px solid orange;
-}
-
-.complexo {
-    border-left: 5px solid purple;
-}
-
-/*
- * ============================================================
- * 🥇 DESTAQUE MELHOR ALGORITMO
- * ============================================================
- */
-.ranking-item.best {
-    background: #d4edda;
-    font-weight: bold;
-}
-
-/*
- * ============================================================
- * 🏷️ BADGES
- * ============================================================
- */
-#badges span {
-    display: inline-block;
-    background: #eee;
-    padding: 6px 10px;
+/* BADGES */
+.badges img {
+    height: 26px;
     margin: 5px;
-    border-radius: 6px;
-    font-size: 14px;
 }
 
-/*
- * ============================================================
- * ✨ ANIMAÇÕES
- * ============================================================
- */
-.fade {
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.4s ease;
-}
-
-.fade.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/*
- * ============================================================
- * 📱 RESPONSIVO
- * ============================================================
- */
-@media (max-width: 768px) {
-    body {
-        padding: 10px;
-    }
-
-    .card {
-        padding: 10px;
-    }
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #64748b;
+    border-top: 1px solid #e2e8f0;
 }
