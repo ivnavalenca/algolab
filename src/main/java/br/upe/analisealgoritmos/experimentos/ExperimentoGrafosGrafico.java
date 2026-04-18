@@ -137,12 +137,16 @@ public class ExperimentoGrafosGrafico implements Experimento {
      * DFS
      * ============================================================
      */
+    
     private void dfs(Map<Integer, List<Integer>> grafo, int no, Set<Integer> visitados) {
-
-        if (!visitados.add(no)) return;
-
+        
+        visitados.add(no);
+        
         for (int vizinho : grafo.get(no)) {
-            dfs(grafo, vizinho, visitados);
+            
+            if (!visitados.contains(vizinho)) {
+                dfs(grafo, vizinho, visitados);
+            }
         }
     }
 }
